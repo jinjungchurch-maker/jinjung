@@ -58,6 +58,16 @@ img{display:block;max-width:100%;}
 .wrap{max-width:1000px;margin:0 auto;padding:30px 24px 90px;}
 .list{display:flex;flex-direction:column;gap:14px;}
 .post{display:flex;align-items:center;gap:18px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 24px;transition:.22s;}
+.post-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 26px;transition:.22s;}
+.post-card:hover{box-shadow:0 20px 44px -32px rgba(16,21,28,.5);}
+.post-head .cat{display:inline-block;font-size:11.5px;font-weight:700;color:var(--sky);background:#eaf4fc;padding:2px 9px;border-radius:20px;margin-bottom:6px;}
+.post-head .t{font-size:17px;font-weight:700;color:var(--ink);}
+.post-head .meta{font-size:13px;color:var(--soft);margin-top:3px;}
+.post-text{margin-top:14px;padding-top:14px;border-top:1px dashed var(--line);font-size:14.5px;color:var(--ink2);line-height:1.75;white-space:normal;}
+.post-files{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;}
+.filelink{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;font-weight:600;color:var(--navy);background:#eef4fb;padding:8px 14px;border-radius:10px;transition:.18s;}
+.filelink:hover{background:#dceafa;}
+.filelink svg{width:16px;height:16px;}
 .post:hover{transform:translateY(-3px);border-color:var(--sky);box-shadow:0 20px 44px -32px rgba(16,21,28,.5);}
 .post .ic{width:46px;height:46px;border-radius:13px;flex:none;display:grid;place-items:center;background:#eef4fb;color:var(--navy);}
 .post .ic svg{width:22px;height:22px;}
@@ -91,6 +101,7 @@ img{display:block;max-width:100%;}
         <button class="dbtn">소개 ▾</button>
         <div class="menu">
           <a href="index.html#about">교회소개</a>
+          <a href="pastor.html">담임목사</a>
           <a href="history.html">교회역사</a>
           <a href="bylaws.html">정관</a>
         </div>
@@ -149,6 +160,8 @@ function fmtDate(d){ if(!d)return""; try{const t=new Date(d);return t.getFullYea
 const fileIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>';
 const arrow='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>';
 
+function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
 function render(posts){
   const list=document.getElementById('list');
   const items=(posts||[]).filter(p=>p.category===cur);
@@ -156,11 +169,26 @@ function render(posts){
     list.innerHTML='<div class="empty"><div class="ic">'+fileIcon+'</div><h3>아직 등록된 글이 없습니다</h3><p>노션에 글을 올리고 \u201C공개\u201D를 체크한 뒤 사이트를 다시 배포하면<br>이곳에 자동으로 나타납니다.</p></div>';
     return;
   }
-  list.innerHTML=items.map(p=>{
-    const link=p.url||(p.attachments&&p.attachments[0])||"#";
-    const ext=link!=="#"?' target="_blank" rel="noopener"':'';
-    const meta=[fmtDate(p.date),p.speaker,p.verse].filter(Boolean).join(" · ");
-    return '<a class="post" href="'+link+'"'+ext+'><span class="ic">'+fileIcon+'</span><div class="body"><span class="cat">'+p.category+'</span><div class="t">'+(p.title||'제목 없음')+'</div>'+(meta?'<div class="meta">'+meta+'</div>':'')+'</div><span class="arrow">'+arrow+'</span></a>';
+  list.innerHTML=items.map((p,i)=>{
+    const hasFile=p.attachments&&p.attachments.length>0;
+    const hasText=p.content&&p.content.trim().length>0;
+    const meta=[fmtDate(p.date)].filter(Boolean).join(" · ");
+
+    // 본문 텍스트가 있으면 카드 안에 펼쳐 보여줌
+    let bodyExtra="";
+    if(hasText){
+      bodyExtra='<div class="post-text">'+esc(p.content).replace(/\n/g,'<br>')+'</div>';
+    }
+    // 첨부가 있으면 다운로드/보기 링크
+    let fileLinks="";
+    if(hasFile){
+      fileLinks='<div class="post-files">'+p.attachments.map((u,k)=>{
+        const name=decodeURIComponent(u.split('/').pop().split('?')[0])||('첨부'+(k+1));
+        return '<a class="filelink" href="'+u+'" target="_blank" rel="noopener">'+fileIcon+' '+esc(name)+'</a>';
+      }).join('')+'</div>';
+    }
+
+    return '<div class="post-card"><div class="post-head"><span class="cat">'+p.category+'</span><div class="t">'+esc(p.title||'제목 없음')+'</div>'+(meta?'<div class="meta">'+meta+'</div>':'')+'</div>'+bodyExtra+fileLinks+'</div>';
   }).join('');
 }
 

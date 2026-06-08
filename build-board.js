@@ -37,6 +37,68 @@ if (!NOTION_TOKEN) {
   process.exit(0);
 }
 
+// 파일을 다운로드하여 files/ 폴더에 저장, 사이트 내 경로 반환
+async function downloadFile(srcUrl, origName) {
+  if (!fs.existsSync("files")) fs.mkdirSync("files");
+  // 안전한 파일명 만들기 (한글/공백 → 정리, 확장자 보존)
+  let ext = "";
+  const m = origName.match(/\.[a-zA-Z0-9]{1,8}$/);
+  if (m) ext = m[0];
+  else {
+    const um = srcUrl.split("?")[0].match(/\.[a-zA-Z0-9]{1,8}$/);
+    if (um) ext = um[0];
+  }
+  const base = origName.replace(/\.[a-zA-Z0-9]{1,8}$/, "").replace(/[^\w가-힣.-]/g, "_");
+  // 중복 방지용 짧은 해시
+  const hash = Math.abs(hashStr(srcUrl)).toString(36).slice(0, 6);
+  const fname = `${base}_${hash}${ext}`;
+  const dest = `files/${fname}`;
+  if (fs.existsSync(dest)) return dest;
+
+  const res = await fetch(srcUrl);
+  if (!res.ok) return "";
+  const buf = Buffer.from(await res.arrayBuffer());
+  fs.writeFileSync(dest, buf);
+  console.log(`  ↓ 첨부 저장: ${dest} (${Math.round(buf.length / 1024)}KB)`);
+  return dest;
+}
+
+function hashStr(s) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) {
+    h = (h << 5) - h + s.charCodeAt(i);
+    h |= 0;
+  }
+  return h;
+}
+
+// 페이지 본문(블록)의 텍스트를 모아서 반환
+async function getPageText(pageId) {
+  let text = "";
+  let cursor = undefined;
+  do {
+    const url =
+      `https://api.notion.com/v1/blocks/${pageId}/children?page_size=100` +
+      (cursor ? `&start_cursor=${cursor}` : "");
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${NOTION_TOKEN}`,
+        "Notion-Version": "2022-06-28",
+      },
+    });
+    if (!res.ok) return text;
+    const data = await res.json();
+    for (const b of data.results) {
+      const rich =
+        (b[b.type] && b[b.type].rich_text) ? b[b.type].rich_text : [];
+      const line = rich.map((r) => r.plain_text).join("");
+      if (line) text += line + "\n";
+    }
+    cursor = data.has_more ? data.next_cursor : undefined;
+  } while (cursor);
+  return text.trim();
+}
+
 async function main() {
   const results = [];
   let cursor = undefined;
@@ -88,15 +150,44 @@ async function main() {
       const d = findProp(p, PROP.date);
       if (d && d.type === "date" && d.date) date = d.date.start;
 
-      // 첨부 파일 (files & media) → URL 목록
+      // 첨부 파일 (files & media) → 빌드 시점에 다운로드하여 사이트에 저장
+      // (노션 파일 URL은 1시간 후 만료되므로, 파일을 직접 받아 보관)
       let attachments = [];
       const f = findProp(p, PROP.files);
       if (f && f.type === "files") {
-        attachments = f.files
-          .map((file) =>
-            file.type === "external" ? file.external.url : file.file ? file.file.url : ""
-          )
-          .filter(Boolean);
+        for (let i = 0; i < f.files.length; i++) {
+          const file = f.files[i];
+          const srcUrl =
+            file.type === "external"
+              ? file.external.url
+              : file.file
+              ? file.file.url
+              : "";
+          if (!srcUrl) continue;
+          // 외부 링크(유튜브 등)는 그대로 사용
+          if (file.type === "external") {
+            attachments.push(srcUrl);
+            continue;
+          }
+          // 노션 업로드 파일은 다운로드하여 files/ 폴더에 저장
+          try {
+            const saved = await downloadFile(srcUrl, file.name || `file${i}`);
+            if (saved) attachments.push(saved);
+          } catch (e) {
+            console.error("파일 다운로드 실패:", e.message);
+          }
+        }
+      }
+
+      // 노션 페이지 URL (영구 링크 — 만료 안 됨)
+      const pageUrl = page.url || "";
+
+      // 페이지 본문 텍스트 가져오기 (구역모임 등 글 내용)
+      let content = "";
+      try {
+        content = await getPageText(page.id);
+      } catch (e) {
+        content = "";
       }
 
       results.push({
@@ -104,6 +195,9 @@ async function main() {
         category,
         date,
         attachments,
+        content,
+        pageUrl,
+        // 링크 우선순위: 첨부파일(다운로드본) → 없으면 빈 값(본문 표시)
         url: attachments[0] || "",
       });
     }
