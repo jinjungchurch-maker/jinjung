@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>게시판 · 진중교회</title>
+<link rel="icon" href="img/logo-color.png">
+<style>
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+:root{
+  --ink:#10151c;--ink2:#3a4654;--soft:#6b7888;--paper:#f6f8fb;--card:#fff;
+  --navy:#16335c;--navy-d:#0d2240;--gold:#e0a93c;--green:#1fa463;--red:#e3242b;--sky:#2f8fd6;--line:rgba(16,21,28,.09);
+  --font:"Pretendard","Apple SD Gothic Neo","Noto Sans KR",sans-serif;--r:22px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);color:var(--ink);background:var(--paper);line-height:1.7;-webkit-font-smoothing:antialiased;}
+a{color:inherit;text-decoration:none;}
+img{display:block;max-width:100%;}
+
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,.95);backdrop-filter:blur(14px);box-shadow:0 6px 26px -20px rgba(0,0,0,.4);}
+.nav-inner{max-width:1240px;margin:0 auto;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;gap:18px;}
+.brand img{height:40px;}
+.nav-links{display:flex;gap:2px;font-size:14.5px;font-weight:600;flex-wrap:wrap;align-items:center;}
+.nav-links > a{padding:8px 12px;border-radius:30px;color:var(--ink2);transition:.2s;}
+.dropdown{position:relative;}
+.dropdown > .dbtn{padding:8px 12px;border-radius:30px;color:var(--ink2);background:none;border:none;font:inherit;font-weight:600;cursor:pointer;transition:.2s;}
+.dropdown > .dbtn:hover,.nav-links > a:hover{background:var(--paper);color:var(--navy);}
+.dropdown .menu{position:absolute;top:100%;left:0;margin-top:6px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 20px 46px -26px rgba(0,0,0,.5);padding:6px;min-width:150px;opacity:0;visibility:hidden;transform:translateY(-6px);transition:.2s;z-index:10;}
+.dropdown:hover .menu,.dropdown:focus-within .menu{opacity:1;visibility:visible;transform:none;}
+.dropdown .menu a{display:block;padding:10px 14px;border-radius:9px;font-size:14px;font-weight:600;color:var(--ink2);}
+.dropdown .menu a:hover{background:var(--paper);color:var(--navy);}
+.nav-links a:hover,.nav-links a.active{background:var(--paper);color:var(--navy);}
+.menu-btn{display:none;background:none;border:none;cursor:pointer;color:var(--ink);}
+.menu-btn svg{width:28px;height:28px;}
+@media(max-width:980px){
+  .nav-links{position:fixed;inset:0 0 0 auto;width:78%;max-width:340px;background:#fff;flex-direction:column;align-items:stretch;padding:84px 20px 30px;gap:2px;transform:translateX(100%);transition:.35s;box-shadow:-20px 0 60px -30px rgba(0,0,0,.5);overflow-y:auto;}
+  .nav-links.open{transform:none;}
+  .nav-links a{font-size:16px;padding:13px 16px;}
+  .nav-links > a,.dropdown > .dbtn{font-size:16px;padding:13px 16px;width:100%;text-align:left;}
+  .dropdown .menu{position:static;opacity:1;visibility:visible;transform:none;box-shadow:none;border:none;padding:0 0 6px 14px;margin:0;min-width:0;}
+  .dropdown .menu a{padding:9px 14px;font-size:14.5px;}
+  .menu-btn{display:block;}
+}
+
+.phead{padding:120px 24px 50px;text-align:center;color:#fff;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--navy),var(--navy-d));}
+.phead::after{content:"";position:absolute;inset:0;background:radial-gradient(closest-side,rgba(47,143,214,.35),transparent) 80% -20%/500px 500px no-repeat;}
+.phead .in{position:relative;max-width:760px;margin:0 auto;}
+.phead .kick{font-size:13px;font-weight:800;letter-spacing:.16em;color:#ffd98a;text-transform:uppercase;}
+.phead h1{font-size:clamp(30px,6vw,48px);font-weight:800;margin-top:8px;}
+
+/* 카테고리 탭 */
+.tabs{max-width:1000px;margin:0 auto;padding:0 24px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;transform:translateY(-22px);}
+.tabs a{padding:10px 18px;border-radius:30px;font-size:14px;font-weight:700;background:#fff;border:1px solid var(--line);color:var(--ink2);box-shadow:0 10px 24px -18px rgba(0,0,0,.4);transition:.2s;}
+.tabs a:hover{color:var(--navy);}
+.tabs a.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+
+.wrap{max-width:1000px;margin:0 auto;padding:30px 24px 90px;}
+.list{display:flex;flex-direction:column;gap:14px;}
+.post{display:flex;align-items:center;gap:18px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 24px;transition:.22s;}
+.post:hover{transform:translateY(-3px);border-color:var(--sky);box-shadow:0 20px 44px -32px rgba(16,21,28,.5);}
+.post .ic{width:46px;height:46px;border-radius:13px;flex:none;display:grid;place-items:center;background:#eef4fb;color:var(--navy);}
+.post .ic svg{width:22px;height:22px;}
+.post .body{flex:1;min-width:0;}
+.post .cat{display:inline-block;font-size:11.5px;font-weight:700;color:var(--sky);background:#eaf4fc;padding:2px 9px;border-radius:20px;margin-bottom:5px;}
+.post .t{font-size:16.5px;font-weight:700;color:var(--ink);}
+.post .meta{font-size:13px;color:var(--soft);margin-top:3px;}
+.post .arrow{flex:none;color:var(--soft);}
+.post .arrow svg{width:20px;height:20px;}
+
+.empty{text-align:center;padding:70px 24px;color:var(--soft);}
+.empty .ic{width:64px;height:64px;border-radius:18px;margin:0 auto 18px;display:grid;place-items:center;background:#eef4fb;color:var(--navy);}
+.empty .ic svg{width:30px;height:30px;}
+.empty h3{font-size:19px;font-weight:800;color:var(--ink2);margin-bottom:8px;}
+.empty p{font-size:14.5px;line-height:1.7;}
+
+.back{display:inline-flex;align-items:center;gap:8px;margin-top:30px;font-weight:700;color:var(--sky);}
+.back svg{width:18px;height:18px;}
+.footer{background:var(--navy-d);color:#aebfd4;padding:36px 24px;text-align:center;font-size:13px;}
+.footer a{color:#cfe0f5;}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="index.html"><img src="img/logo-color.png" alt="진중교회"></a>
+    <button class="menu-btn" id="menuBtn" aria-label="메뉴"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+    <div class="nav-links" id="navLinks">
+      <div class="dropdown">
+        <button class="dbtn">소개 ▾</button>
+        <div class="menu">
+          <a href="index.html#about">교회소개</a>
+          <a href="history.html">교회역사</a>
+          <a href="bylaws.html">정관</a>
+        </div>
+      </div>
+      <a href="board.html?cat=설교">설교</a>
+      <a href="board.html?cat=찬양">찬양</a>
+      <div class="dropdown">
+        <button class="dbtn">소그룹 ▾</button>
+        <div class="menu">
+          <a href="board.html?cat=구역모임">구역모임</a>
+          <a href="board.html?cat=가정예배">가정예배</a>
+        </div>
+      </div>
+      <a href="board.html?cat=주보">주보</a>
+    </div>
+  </div>
+</nav>
+
+<header class="phead">
+  <div class="in">
+    <p class="kick">Board</p>
+    <h1 id="board-title">게시판</h1>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs"></nav>
+
+<main class="wrap">
+  <div class="list" id="list"></div>
+  <a class="back" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>홈으로 돌아가기</a>
+</main>
+
+<footer class="footer">
+  © 2026 진중교회 · Since 1964 · (12281) 경기도 남양주시 조안면 운길산로 35 · <a href="tel:031-576-8511">031-576-8511</a>
+</footer>
+
+<script>
+const mb=document.getElementById('menuBtn'), nl=document.getElementById('navLinks');
+mb.addEventListener('click',()=>nl.classList.toggle('open'));
+
+const CATS=["설교","찬양","구역모임","가정예배","주보"];
+const params=new URLSearchParams(location.search);
+let cur=params.get('cat'); if(!CATS.includes(cur)) cur=CATS[0];
+document.getElementById('board-title').textContent=cur;
+
+// 탭
+const tabs=document.getElementById('tabs');
+CATS.forEach(c=>{
+  const a=document.createElement('a');
+  a.href="board.html?cat="+encodeURIComponent(c);
+  a.textContent=c; if(c===cur)a.className="active";
+  tabs.appendChild(a);
+});
+
+function fmtDate(d){ if(!d)return""; try{const t=new Date(d);return t.getFullYear()+". "+(t.getMonth()+1)+". "+t.getDate()+".";}catch(e){return d;} }
+const fileIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>';
+const arrow='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>';
+
+function render(posts){
+  const list=document.getElementById('list');
+  const items=(posts||[]).filter(p=>p.category===cur);
+  if(!items.length){
+    list.innerHTML='<div class="empty"><div class="ic">'+fileIcon+'</div><h3>아직 등록된 글이 없습니다</h3><p>노션에 글을 올리고 \u201C공개\u201D를 체크한 뒤 사이트를 다시 배포하면<br>이곳에 자동으로 나타납니다.</p></div>';
+    return;
+  }
+  list.innerHTML=items.map(p=>{
+    const link=p.url||(p.attachments&&p.attachments[0])||"#";
+    const ext=link!=="#"?' target="_blank" rel="noopener"':'';
+    const meta=[fmtDate(p.date),p.speaker,p.verse].filter(Boolean).join(" · ");
+    return '<a class="post" href="'+link+'"'+ext+'><span class="ic">'+fileIcon+'</span><div class="body"><span class="cat">'+p.category+'</span><div class="t">'+(p.title||'제목 없음')+'</div>'+(meta?'<div class="meta">'+meta+'</div>':'')+'</div><span class="arrow">'+arrow+'</span></a>';
+  }).join('');
+}
+
+// board-data.json 읽기 (노션 빌드가 생성). 없으면 빈 상태 표시.
+fetch('board-data.json').then(r=>r.ok?r.json():Promise.reject()).then(data=>render(data)).catch(()=>render([]));
+</script>
+</body>
+</html>

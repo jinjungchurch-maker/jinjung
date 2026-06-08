@@ -1,0 +1,8 @@
+{
+  "name": "jinjung-church",
+  "version": "1.0.0",
+  "description": "진중교회 홈페이지 — 노션 게시판 연동",
+  "scripts": {
+    "build": "node build-board.js"
+  }
+}

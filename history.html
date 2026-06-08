@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>교회 역사 · 진중교회</title>
+<meta name="description" content="진중교회의 발자취 — 1964년 설립부터 오늘까지.">
+<link rel="icon" href="img/logo-color.png">
+<style>
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+:root{
+  --ink:#10151c; --ink2:#3a4654; --soft:#6b7888;
+  --paper:#f6f8fb; --card:#fff; --navy:#16335c; --navy-d:#0d2240;
+  --gold:#e0a93c; --green:#1fa463; --red:#e3242b; --sky:#2f8fd6; --line:rgba(16,21,28,.09);
+  --font:"Pretendard","Apple SD Gothic Neo","Noto Sans KR",sans-serif; --r:22px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);color:var(--ink);background:var(--paper);line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+a{color:inherit;text-decoration:none;}
+img{display:block;max-width:100%;}
+
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(14px);box-shadow:0 6px 26px -20px rgba(0,0,0,.4);}
+.nav-inner{max-width:1200px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;gap:18px;}
+.brand{display:flex;align-items:center;gap:11px;font-weight:800;font-size:19px;color:var(--ink);}
+.brand img{height:40px;}
+.brand small{display:block;font-size:11px;font-weight:600;color:var(--soft);}
+.nav-links{display:flex;gap:3px;font-size:14.5px;font-weight:600;align-items:center;}
+.nav-links > a{padding:9px 14px;border-radius:30px;color:var(--ink2);transition:.2s;}
+.dropdown{position:relative;}
+.dropdown > .dbtn{padding:9px 13px;border-radius:30px;color:var(--ink2);background:none;border:none;font:inherit;font-weight:600;cursor:pointer;transition:.2s;}
+.dropdown > .dbtn:hover,.nav-links > a:hover{background:var(--paper);color:var(--navy);}
+.dropdown .menu{position:absolute;top:100%;left:0;margin-top:6px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 20px 46px -26px rgba(0,0,0,.5);padding:6px;min-width:150px;opacity:0;visibility:hidden;transform:translateY(-6px);transition:.2s;}
+.dropdown:hover .menu,.dropdown:focus-within .menu{opacity:1;visibility:visible;transform:none;}
+.dropdown .menu a{display:block;padding:10px 14px;border-radius:9px;font-size:14px;font-weight:600;color:var(--ink2);}
+.dropdown .menu a:hover{background:var(--paper);color:var(--navy);}
+.nav-links a:hover,.nav-links a.active{background:var(--paper);color:var(--navy);}
+.menu-btn{display:none;background:none;border:none;cursor:pointer;color:var(--ink);}
+.menu-btn svg{width:28px;height:28px;}
+@media(max-width:860px){
+  .nav-links{position:fixed;inset:0 0 0 auto;width:75%;max-width:320px;background:#fff;flex-direction:column;align-items:stretch;padding:90px 24px;gap:2px;transform:translateX(100%);transition:.35s;box-shadow:-20px 0 60px -30px rgba(0,0,0,.5);overflow-y:auto;}
+  .nav-links.open{transform:none;}
+  .nav-links > a,.dropdown > .dbtn{font-size:16px;padding:13px 16px;width:100%;text-align:left;}
+  .dropdown .menu{position:static;opacity:1;visibility:visible;transform:none;box-shadow:none;border:none;padding:0 0 6px 14px;margin:0;min-width:0;}
+  .dropdown .menu a{padding:9px 14px;font-size:14.5px;}
+  .menu-btn{display:block;}
+}
+
+.phead{padding:140px 24px 70px;text-align:center;color:#fff;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--navy),var(--navy-d));}
+.phead::before{content:"";position:absolute;inset:0;background:url('img/steeple.jpg') center 35%/cover no-repeat;opacity:.22;}
+.phead::after{content:"";position:absolute;inset:0;background:radial-gradient(closest-side,rgba(47,143,214,.35),transparent) 80% -20%/500px 500px no-repeat;}
+.phead .in{position:relative;max-width:760px;margin:0 auto;}
+.phead .kick{font-size:13px;font-weight:800;letter-spacing:.16em;color:#ffd98a;text-transform:uppercase;}
+.phead h1{font-size:clamp(32px,7vw,58px);font-weight:800;letter-spacing:-.02em;margin-top:10px;}
+.phead p{margin-top:16px;opacity:.9;font-size:16px;}
+
+.wrap{max-width:920px;margin:0 auto;padding:clamp(56px,9vw,96px) 24px;}
+
+.intro{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:clamp(28px,5vw,48px);text-align:center;box-shadow:0 30px 70px -50px rgba(16,21,28,.5);margin-bottom:30px;}
+.intro .yr{font-size:clamp(40px,9vw,72px);font-weight:800;letter-spacing:-.02em;background:linear-gradient(120deg,var(--navy),var(--sky));-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1;}
+.intro .yr span{font-size:.4em;color:var(--soft);-webkit-text-fill-color:var(--soft);font-weight:700;}
+.intro p{margin-top:16px;color:var(--ink2);font-size:16.5px;}
+
+/* 시기 구분 */
+.era{margin-top:46px;}
+.era-tag{display:inline-flex;align-items:center;gap:9px;font-size:15px;font-weight:800;color:#fff;padding:8px 18px;border-radius:30px;margin-bottom:6px;}
+.era-tag .yrs{font-weight:600;opacity:.85;font-size:13px;}
+.era-1 .era-tag{background:linear-gradient(135deg,var(--sky),#1f6fb0);}
+.era-2 .era-tag{background:linear-gradient(135deg,var(--green),#0f7a47);}
+.era-3 .era-tag{background:linear-gradient(135deg,var(--gold),#b9831f);}
+.era-4 .era-tag{background:linear-gradient(135deg,var(--red),#a81b21);}
+
+/* 타임라인 */
+.tl{position:relative;margin-top:18px;padding-left:30px;}
+.tl::before{content:"";position:absolute;left:7px;top:8px;bottom:8px;width:2.5px;border-radius:3px;background:var(--line);}
+.era-1 .tl::before{background:linear-gradient(180deg,var(--sky),rgba(47,143,214,.2));}
+.era-2 .tl::before{background:linear-gradient(180deg,var(--green),rgba(31,164,99,.2));}
+.era-3 .tl::before{background:linear-gradient(180deg,var(--gold),rgba(224,169,60,.2));}
+.era-4 .tl::before{background:linear-gradient(180deg,var(--red),rgba(227,36,43,.2));}
+.tl-row{position:relative;padding:0 0 18px 20px;}
+.tl-row::before{content:"";position:absolute;left:-29px;top:7px;width:13px;height:13px;border-radius:50%;background:#fff;border:3px solid var(--sky);}
+.era-2 .tl-row::before{border-color:var(--green);}
+.era-3 .tl-row::before{border-color:var(--gold);}
+.era-4 .tl-row::before{border-color:var(--red);}
+.tl-row.big::before{width:17px;height:17px;left:-31px;box-shadow:0 0 0 4px var(--paper);}
+.tl-date{font-size:13.5px;font-weight:800;color:var(--navy);letter-spacing:.01em;}
+.tl-text{font-size:15px;color:var(--ink2);margin-top:1px;}
+.tl-text b{color:var(--ink);font-weight:700;}
+.tl-row.big .tl-text{font-size:15.5px;}
+
+.docs{margin-top:54px;display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+@media(max-width:640px){.docs{grid-template-columns:1fr;}}
+.doc{display:flex;align-items:center;gap:15px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 24px;transition:.25s;}
+.doc:hover{transform:translateY(-3px);border-color:var(--sky);box-shadow:0 22px 46px -34px rgba(16,21,28,.5);}
+.doc .ic{width:48px;height:48px;border-radius:14px;flex:none;display:grid;place-items:center;background:#eef4fb;color:var(--navy);}
+.doc .ic svg{width:23px;height:23px;}
+.doc .t{font-size:16px;font-weight:800;}
+.doc .d{font-size:13px;color:var(--soft);}
+
+.vision{margin-top:46px;text-align:center;background:linear-gradient(135deg,var(--navy),var(--navy-d));color:#fff;border-radius:var(--r);padding:clamp(30px,6vw,56px);position:relative;overflow:hidden;}
+.vision::before{content:"";position:absolute;inset:0;opacity:.5;background:radial-gradient(closest-side,rgba(47,143,214,.4),transparent) -10% 120%/500px 500px no-repeat;}
+.vision h2{position:relative;font-size:clamp(22px,5vw,34px);font-weight:800;}
+.vision p{position:relative;margin-top:14px;opacity:.9;}
+.vision .vref{position:relative;margin-top:8px;font-size:13.5px;opacity:.6;}
+
+.back{display:inline-flex;align-items:center;gap:8px;margin-top:40px;font-weight:700;color:var(--sky);}
+.back svg{width:18px;height:18px;}
+
+.footer{background:var(--navy-d);color:#aebfd4;padding:40px 24px;text-align:center;font-size:13px;}
+.footer a{color:#cfe0f5;}
+
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s,transform .7s;}
+.reveal.in{opacity:1;transform:none;}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="index.html"><img src="img/logo-color.png" alt="진중교회"></a>
+    <button class="menu-btn" id="menuBtn" aria-label="메뉴"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+            <div class="nav-links" id="navLinks">
+      <div class="dropdown">
+        <button class="dbtn">소개 ▾</button>
+        <div class="menu">
+          <a href="index.html#about">교회소개</a>
+          <a href="history.html">교회역사</a>
+          <a href="bylaws.html">정관</a>
+        </div>
+      </div>
+      <a href="board.html?cat=설교">설교</a>
+      <a href="board.html?cat=찬양">찬양</a>
+      <div class="dropdown">
+        <button class="dbtn">소그룹 ▾</button>
+        <div class="menu">
+          <a href="board.html?cat=구역모임">구역모임</a>
+          <a href="board.html?cat=가정예배">가정예배</a>
+        </div>
+      </div>
+      <a href="board.html?cat=주보">주보</a>
+    </div>
+  </div>
+</nav>
+
+<header class="phead">
+  <div class="in">
+    <p class="kick">Our History</p>
+    <h1>진중교회의 발자취</h1>
+    <p>1964년 한 알의 밀알로 시작해, 60년을 마을과 함께 걸어왔습니다.</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="intro reveal">
+    <div class="yr">60<span>주년</span></div>
+    <p>1964년 9월 27일 설립된 진중교회는 운길산 자락 조안면에서<br>네 시기를 지나며 예배와 섬김의 길을 이어 왔습니다.</p>
+  </div>
+
+  <!-- 태동기 -->
+  <div class="era era-1 reveal">
+    <span class="era-tag">태동기 <span class="yrs">1964–1975</span></span>
+    <div class="tl">
+      <div class="tl-row big"><div class="tl-date">1964. 9. 27.</div><div class="tl-text"><b>진중교회 설립.</b> 서울 면목동교회 담임전도사로 섬기던 ①이문규 전도사가 진중리 청년회관 건물을 자부담으로 매입하여 교회를 세우다. (1970. 10. 22. 별세)</div></div>
+      <div class="tl-row"><div class="tl-date">1967. 5.</div><div class="tl-text">이문규 전도사와 신필갑 집사가 대표가 되어 대한예수교장로회(통합) 서울동노회에 가입하다.</div></div>
+      <div class="tl-row"><div class="tl-date">1970. 9.</div><div class="tl-text"><b>첫 번째 예배당을 건축하다</b> (10평).</div></div>
+      <div class="tl-row"><div class="tl-date">1973.</div><div class="tl-text">②임춘성 전도사 부임하다. (1976. 5. 사임)</div></div>
+    </div>
+  </div>
+
+  <!-- 정착기 -->
+  <div class="era era-2 reveal">
+    <span class="era-tag">정착기 <span class="yrs">1976–1997</span></span>
+    <div class="tl">
+      <div class="tl-row"><div class="tl-date">1976. 10. 17.</div><div class="tl-text">③정진금 전도사 부임하다. (1980. 3. 9. 사임)</div></div>
+      <div class="tl-row"><div class="tl-date">1977. 4. 18.</div><div class="tl-text">개인주택 매입하다 (10평).</div></div>
+      <div class="tl-row"><div class="tl-date">1978. 3. 15.</div><div class="tl-text"><b>두 번째 예배당 기공예배</b>를 드리다 (30평).</div></div>
+      <div class="tl-row"><div class="tl-date">1978. 12. 31.</div><div class="tl-text">예배당 준공하다.</div></div>
+      <div class="tl-row"><div class="tl-date">1980. 6. 1.</div><div class="tl-text">④김신욱 전도사 부임하다. (1987. 5. 목사 안수 / 1999. 12. 31. 사임 / 2000. 1. 28. 별세)</div></div>
+      <div class="tl-row"><div class="tl-date">1984. 11. 17.</div><div class="tl-text">헌당예배 드리다.</div></div>
+      <div class="tl-row"><div class="tl-date">1985. 3.</div><div class="tl-text">교회 앞 땅을 매입하다 (답 620평).</div></div>
+      <div class="tl-row"><div class="tl-date">1989. 3. 10.</div><div class="tl-text">매매 이전하다 (답 620평을 교회 앞 486평과 교환 등기 이전).</div></div>
+      <div class="tl-row"><div class="tl-date">1990. 11. 27.</div><div class="tl-text"><b>임직예배</b>를 드리다. (안수집사: 임신섭·이흥재 / 권사: 임전기자)</div></div>
+      <div class="tl-row"><div class="tl-date">1997. 4.</div><div class="tl-text"><b>세 번째 예배당 기공예배</b>를 드리다.</div></div>
+      <div class="tl-row"><div class="tl-date">1997. 11. 25.</div><div class="tl-text">입당예배 드리다.</div></div>
+    </div>
+  </div>
+
+  <!-- 도약기 -->
+  <div class="era era-3 reveal">
+    <span class="era-tag">도약기 <span class="yrs">1997–2020</span></span>
+    <div class="tl">
+      <div class="tl-row"><div class="tl-date">1999. 5. 1.</div><div class="tl-text">⑤권철순 목사 부임하다. (2020. 12. 13. 사임, 옥토교회 파송)</div></div>
+      <div class="tl-row"><div class="tl-date">2006. 7. 9.</div><div class="tl-text"><b>헌당 및 임직 예배</b> 드리다. (장로: 유창근·조원대 / 권사: 이희자·차옥희)</div></div>
+      <div class="tl-row"><div class="tl-date">2010. 1.</div><div class="tl-text">황선태 목사 찬양대 지휘자로 부임하다. (2022. 10. 30. 사임)</div></div>
+      <div class="tl-row"><div class="tl-date">2011. 4.</div><div class="tl-text">사택 기공예배 드리다 (24평).</div></div>
+      <div class="tl-row"><div class="tl-date">2011. 10. 21.</div><div class="tl-text">사택 준공예배 드리다.</div></div>
+      <div class="tl-row"><div class="tl-date">2013. 8. 6.</div><div class="tl-text">교회 온라인 카페 개설하다.</div></div>
+      <div class="tl-row"><div class="tl-date">2019. 1. 6.</div><div class="tl-text"><b>교회정관 제정</b> · 운영위원회 조직하다 (9명, 담임목사 외 8명).</div></div>
+      <div class="tl-row"><div class="tl-date">2020. 1.</div><div class="tl-text">채지현 전도사(아동부) 부임하다. (2020. 12. 사임)</div></div>
+    </div>
+  </div>
+
+  <!-- 변화기 -->
+  <div class="era era-4 reveal">
+    <span class="era-tag">변화기 <span class="yrs">2021–</span></span>
+    <div class="tl">
+      <div class="tl-row big"><div class="tl-date">2020. 12. 13.</div><div class="tl-text"><b>⑥안창진 목사 부임하다.</b></div></div>
+      <div class="tl-row"><div class="tl-date">2021. 3.</div><div class="tl-text">교적 전산화 작업하다.</div></div>
+      <div class="tl-row"><div class="tl-date">2021. 5.</div><div class="tl-text"><b>홈페이지 개설하다</b> (jinjung.org).</div></div>
+      <div class="tl-row"><div class="tl-date">2022. 1. 2.</div><div class="tl-text">김신현 전도사 부임하다.</div></div>
+      <div class="tl-row"><div class="tl-date">2022. 3.</div><div class="tl-text">조안마을사회적협동조합 설립하다.</div></div>
+      <div class="tl-row"><div class="tl-date">2022. 5. 21.</div><div class="tl-text">물의정원 꿈의학교 개설 (축구).</div></div>
+      <div class="tl-row"><div class="tl-date">2022. 6. 5.</div><div class="tl-text">첫 번째 샬롬워십(찬양예배) 드리다.</div></div>
+      <div class="tl-row"><div class="tl-date">2022. 10.</div><div class="tl-text">소그룹학교 개강 · 탁구대회(남선교회 주관).</div></div>
+      <div class="tl-row"><div class="tl-date">2023. 3. 12.</div><div class="tl-text">소그룹 모임 시작 (말씀나눔).</div></div>
+      <div class="tl-row"><div class="tl-date">2023. 5. 28.</div><div class="tl-text"><b>항존직 선거</b> — 장로 피택: 이흥재·조현주 / 안수집사: 김기석·김종수 / 권사: 김순옥·김은숙·이옥임·정정미·한선옥·한영숙·허선민·황민희.</div></div>
+      <div class="tl-row"><div class="tl-date">2023. 7. 16–21.</div><div class="tl-text">몽골 비전트립 (26명 참석).</div></div>
+      <div class="tl-row"><div class="tl-date">2023. 9. 24.</div><div class="tl-text">창립주일 온세대예배 및 체육대회 (조안초 체육관).</div></div>
+      <div class="tl-row"><div class="tl-date">2023. 11. 12.</div><div class="tl-text">임직식.</div></div>
+      <div class="tl-row"><div class="tl-date">2024. 1. 7.</div><div class="tl-text"><b>교회정관 개정</b> · 신년목회세미나 (제직·교사·구역).</div></div>
+      <div class="tl-row"><div class="tl-date">2024. 4. 3.</div><div class="tl-text">중보기도학교 (1기). 이후 6월 중보기도사역 시작.</div></div>
+      <div class="tl-row"><div class="tl-date">2024. 7. 22–27.</div><div class="tl-text">몽골 비전트립 (25명 참석).</div></div>
+      <div class="tl-row"><div class="tl-date">2024. 8. 11–13.</div><div class="tl-text">교회학교 연합수련회 (일가수도원).</div></div>
+      <div class="tl-row big"><div class="tl-date">2024. 9. 22.</div><div class="tl-text"><b>창립 60주년 기념예배 및 체육대회.</b></div></div>
+      <div class="tl-row"><div class="tl-date">2024. 11. 10.</div><div class="tl-text">새가족 양육 개강.</div></div>
+      <div class="tl-row"><div class="tl-date">2025. 3. 31.</div><div class="tl-text"><b>진중교회 블로그 개설하다.</b></div></div>
+    </div>
+  </div>
+
+  <!-- 정관 · 주보 문서 -->
+  <div class="docs reveal">
+    <a class="doc" href="bylaws.html">
+      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg></span>
+      <div><div class="t">교회 정관</div><div class="d">2019 제정 · 2024 개정 · 전문 보기 →</div></div>
+    </a>
+    <a class="doc" href="bulletin.html">
+      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
+      <div><div class="t">주보</div><div class="d">매주 주보 보기 →</div></div>
+    </a>
+  </div>
+
+  <div class="vision reveal">
+    <h2>“용서, 사랑의 시작입니다”</h2>
+    <p>60년의 발자취를 기억하며, 가정과 세상을 건강하게 세우는 교회로 나아갑니다.</p>
+    <p class="vref">이사야 55:7 · 에베소서 4:31–32</p>
+  </div>
+
+  <a class="back" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>홈으로 돌아가기</a>
+
+</main>
+
+<footer class="footer">
+  © 2026 진중교회 · Since 1964 · (12281) 경기도 남양주시 조안면 운길산로 35 · <a href="tel:031-576-8511">031-576-8511</a>
+</footer>
+
+<script>
+const mb=document.getElementById('menuBtn'), nl=document.getElementById('navLinks');
+mb.addEventListener('click',()=>nl.classList.toggle('open'));
+const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.08});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>

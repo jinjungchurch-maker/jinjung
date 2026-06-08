@@ -1,0 +1,12 @@
+# Netlify 배포 설정
+# (OnPod에 배포할 경우 이 파일은 무시되며, OnPod 콘솔에서 빌드 명령을 직접 지정합니다.)
+
+[build]
+  # 배포 시 노션에서 글을 읽어 board-data.json 생성
+  command = "node build-board.js"
+  # 사이트 파일이 있는 폴더 (현재 폴더)
+  publish = "."
+
+# 환경변수 NOTION_TOKEN, NOTION_DATABASE_ID 는
+# Netlify 사이트 설정 → Environment variables 에서 직접 입력합니다.
+# (코드/파일에 토큰을 적지 않습니다.)
