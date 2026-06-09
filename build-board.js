@@ -147,6 +147,16 @@ async function getPageText(pageId) {
       } else if (type === "to_do") {
         num = 0;
         lines.push((b.to_do && b.to_do.checked ? "☑ " : "☐ ") + txt);
+      } else if (type === "bookmark" || type === "embed" || type === "link_preview") {
+        // 붙여넣은 링크(북마크·임베드) → URL 보존 (유튜브 등 자동 인식)
+        num = 0;
+        const blk = b[type];
+        if (blk && blk.url) lines.push(blk.url);
+      } else if (type === "video") {
+        // 유튜브 등 외부 동영상 블록 → URL 보존
+        num = 0;
+        const v = b.video;
+        if (v && v.type === "external" && v.external) lines.push(v.external.url);
       } else {
         // 문단·제목·인용 등 — 빈 문단은 빈 줄로 보존(한 줄 띄우기 유지)
         num = 0;
