@@ -76,6 +76,9 @@ img{display:block;max-width:100%;}
 .preview img{width:100%;height:auto;display:block;background:#fff;}
 .preview iframe{width:100%;height:78vh;min-height:460px;border:0;display:block;background:#fff;}
 .preview.video iframe{height:auto;aspect-ratio:16/9;min-height:0;}
+/* HTML 첨부(가정예배지)는 테두리·내부 스크롤 없이 페이지에 자연스럽게 — 높이 자동 맞춤 */
+.preview-html{margin-top:18px;}
+.preview-html .hframe{width:100%;border:0;display:block;background:transparent;min-height:300px;}
 .post:hover{transform:translateY(-3px);border-color:var(--sky);box-shadow:0 20px 44px -32px rgba(16,21,28,.5);}
 .post .ic{width:46px;height:46px;border-radius:13px;flex:none;display:grid;place-items:center;background:#eef4fb;color:var(--navy);}
 .post .ic svg{width:22px;height:22px;}
@@ -170,14 +173,32 @@ const arrow='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-w
 
 function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-// 첨부 1개를 화면에 바로 펼쳐 보여줌 (이미지·PDF·유튜브)
+// HTML 첨부(가정예배지) 높이를 내용에 맞춰 늘려 프레임/내부 스크롤 제거
+function fitFrame(f){
+  try{
+    var d=f.contentDocument||f.contentWindow.document;
+    var h=Math.max(d.body.scrollHeight,d.documentElement.scrollHeight);
+    f.style.height=(h+24)+'px';
+    setTimeout(function(){ try{ f.style.height=(Math.max(d.body.scrollHeight,d.documentElement.scrollHeight)+24)+'px'; }catch(e){} }, 900); // 폰트 로딩 후 보정
+  }catch(e){ f.style.height='85vh'; }
+}
+window.addEventListener('resize',function(){ document.querySelectorAll('.hframe').forEach(fitFrame); });
+
+// 유튜브 영상 ID 추출 (링크가 본문·첨부 어디에 있든 인식)
+function ytId(u){ const m=(u||'').match(/(?:youtu\.be\/|[?&]v=|embed\/|shorts\/)([\w-]{11})/); return m?m[1]:''; }
+function ytEmbed(id){ return '<div class="preview video"><iframe src="https://www.youtube-nocookie.com/embed/'+id+'?rel=0" title="영상" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>'; }
+function findYt(p){
+  for(const u of (p.attachments||[])){ const id=ytId(u); if(id) return id; }
+  return ytId(p.content||'') || ytId(p.url||'');
+}
+
+// 파일 1개를 화면에 바로 펼쳐 보여줌 (이미지·PDF·HTML)
 function preview(u){
   const ext=(u.split('?')[0].split('.').pop()||'').toLowerCase();
-  const yt=u.match(/(?:youtu\.be\/|[?&]v=|embed\/)([\w-]{11})/);
-  if(yt) return '<div class="preview video"><iframe src="https://www.youtube-nocookie.com/embed/'+yt[1]+'?rel=0" title="영상" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe></div>';
+  const yi=ytId(u); if(yi) return ytEmbed(yi);
   if(['jpg','jpeg','png','gif','webp','svg'].includes(ext)) return '<div class="preview"><img src="'+u+'" alt="" loading="lazy"></div>';
   if(ext==='pdf') return '<div class="preview"><iframe src="'+u+'#view=FitH" title="첨부 미리보기"></iframe></div>';
-  if(ext==='html'||ext==='htm') return '<div class="preview"><iframe src="'+u+'" title="가정예배지" sandbox="allow-scripts allow-same-origin allow-popups allow-modals allow-downloads"></iframe></div>';
+  if(ext==='html'||ext==='htm') return '<div class="preview-html"><iframe class="hframe" src="'+u+'" title="가정예배지" onload="fitFrame(this)" sandbox="allow-scripts allow-same-origin allow-popups allow-modals allow-downloads"></iframe></div>';
   return '';
 }
 
@@ -189,32 +210,31 @@ function render(posts){
     return;
   }
   list.innerHTML=items.map((p,i)=>{
-    const hasFile=p.attachments&&p.attachments.length>0;
-    const hasText=p.content&&p.content.trim().length>0;
+    const newest=(i===0);                                   // 가장 최근 글
+    const yi=findYt(p);                                     // 유튜브 영상(있으면)
+    const files=(p.attachments||[]).filter(u=>!ytId(u));    // 유튜브 외 실제 첨부파일
+    const hasFile=files.length>0;
     const meta=[fmtDate(p.date)].filter(Boolean).join(" · ");
-    const newest=(i===0);   // 가장 최근 글
 
-    let bodyExtra="";
-    if(hasText){
-      bodyExtra='<div class="post-text">'+esc(p.content).replace(/\n/g,'<br>')+'</div>';
+    // 본문에서 유튜브 URL 자체는 빼고 표시 (이미 영상으로 재생되므로)
+    let text=(p.content||'');
+    if(yi) text=text.replace(/https?:\/\/\S*(?:youtu\.be|youtube\.com)\/\S+/g,'').replace(/\n{3,}/g,'\n\n').trim();
+    const hasText=text.length>0;
+
+    let media="";
+    if(yi) media+=ytEmbed(yi);                              // 모든 글: 유튜브 바로보기
+    if(newest&&hasFile){                                    // 최신 글: 파일(HTML/PDF/이미지) 인라인
+      const htmlAtt=files.find(u=>/\.html?(\?|$)/i.test(u));
+      media+=preview(htmlAtt||files[0]);
     }
-    // 최신 글이면 첨부를 바로 펼쳐 보여줌 (HTML 가정예배지가 있으면 그것을 우선)
-    let featured="";
-    if(newest&&hasFile){
-      const htmlAtt=p.attachments.find(u=>/\.html?(\?|$)/i.test(u));
-      featured=preview(htmlAtt||p.attachments[0]);
-    }
-    // 첨부 다운로드/보기 링크
-    let fileLinks="";
-    if(hasFile){
-      fileLinks='<div class="post-files">'+p.attachments.map((u,k)=>{
+    let bodyExtra= hasText ? '<div class="post-text">'+esc(text).replace(/\n/g,'<br>')+'</div>' : '';
+    let fileLinks= hasFile ? '<div class="post-files">'+files.map((u,k)=>{
         const name=decodeURIComponent(u.split('/').pop().split('?')[0])||('첨부'+(k+1));
         return '<a class="filelink" href="'+u+'" target="_blank" rel="noopener">'+fileIcon+' '+esc(name)+'</a>';
-      }).join('')+'</div>';
-    }
+      }).join('')+'</div>' : '';
 
     const head='<div class="post-head">'+(newest?'<span class="newtag">최신</span>':'')+'<span class="cat">'+p.category+'</span><div class="t">'+esc(p.title||'제목 없음')+'</div>'+(meta?'<div class="meta">'+meta+'</div>':'')+'</div>';
-    return '<div class="post-card'+(newest?' featured':'')+'">'+head+bodyExtra+featured+fileLinks+'</div>';
+    return '<div class="post-card'+(newest?' featured':'')+'">'+head+media+bodyExtra+fileLinks+'</div>';
   }).join('');
 }
 
