@@ -207,6 +207,12 @@ function preview(u){
 function render(posts){
   const list=document.getElementById('list');
   const items=(posts||[]).filter(p=>p.category===cur);
+  // 화면에서도 날짜 최신순으로 한 번 더 정렬 (날짜 없으면 작성시각 보조)
+  items.sort(function(a,b){
+    var ka=(a.date||a.created||''), kb=(b.date||b.created||'');
+    if(ka!==kb) return kb.localeCompare(ka);
+    return (b.created||'').localeCompare(a.created||'');
+  });
   if(!items.length){
     list.innerHTML='<div class="empty"><div class="ic">'+fileIcon+'</div><h3>아직 등록된 글이 없습니다</h3><p>노션에 글을 올리고 \u201C공개\u201D를 체크한 뒤 사이트를 다시 배포하면<br>이곳에 자동으로 나타납니다.</p></div>';
     return;

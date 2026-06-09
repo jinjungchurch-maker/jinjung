@@ -18,7 +18,7 @@ const DATABASE_ID =
 const PROP = {
   title: ["제목"],
   category: ["카테고리"],
-  date: ["날짜"],
+  date: ["날짜", "일자", "게시일", "Date", "date"],
   files: ["파일과 미디어", "파일과미디어", "첨부"], // 첨부 (띄어쓰기 변형 대응)
   checkbox: ["체크박스", "공개"],                  // 공개 여부
 };
@@ -215,10 +215,17 @@ async function main() {
       const c = findProp(p, PROP.category);
       if (c && c.type === "select" && c.select) category = c.select.name;
 
-      // 날짜
+      // 날짜 — 후보 이름으로 찾고, 없으면 date 타입 속성을 자동 탐지
       let date = "";
-      const d = findProp(p, PROP.date);
+      let d = findProp(p, PROP.date);
+      if (!d) {
+        for (const k in p) {
+          if (p[k] && p[k].type === "date") { d = p[k]; break; }
+        }
+      }
       if (d && d.type === "date" && d.date) date = d.date.start;
+      // 작성 시각 (정렬 보조 / 날짜 없을 때 대비)
+      const created = page.created_time || "";
 
       // 첨부 파일 (files & media) → 빌드 시점에 다운로드하여 사이트에 저장
       // (노션 파일 URL은 1시간 후 만료되므로, 파일을 직접 받아 보관)
@@ -264,6 +271,7 @@ async function main() {
         title,
         category,
         date,
+        created,
         attachments,
         content,
         pageUrl,
@@ -275,8 +283,13 @@ async function main() {
     cursor = data.has_more ? data.next_cursor : undefined;
   } while (cursor);
 
-  // 날짜 최신순 정렬
-  results.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+  // 날짜 최신순 정렬 (날짜 없으면 작성시각으로 보조)
+  results.sort((a, b) => {
+    const ka = a.date || a.created || "";
+    const kb = b.date || b.created || "";
+    if (ka !== kb) return kb.localeCompare(ka);
+    return (b.created || "").localeCompare(a.created || "");
+  });
 
   fs.writeFileSync("board-data.json", JSON.stringify(results, null, 2));
   console.log(`✅ board-data.json 생성 완료 — 글 ${results.length}개`);
