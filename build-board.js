@@ -119,8 +119,9 @@ function hashStr(s) {
 
 // 페이지 본문(블록)의 텍스트를 모아서 반환
 async function getPageText(pageId) {
-  let text = "";
+  let lines = [];
   let cursor = undefined;
+  let num = 0; // 번호 목록 카운터
   do {
     const url =
       `https://api.notion.com/v1/blocks/${pageId}/children?page_size=100` +
@@ -131,17 +132,31 @@ async function getPageText(pageId) {
         "Notion-Version": "2022-06-28",
       },
     });
-    if (!res.ok) return text;
+    if (!res.ok) return lines.join("\n").trim();
     const data = await res.json();
     for (const b of data.results) {
-      const rich =
-        (b[b.type] && b[b.type].rich_text) ? b[b.type].rich_text : [];
-      const line = rich.map((r) => r.plain_text).join("");
-      if (line) text += line + "\n";
+      const type = b.type;
+      const rich = b[type] && b[type].rich_text ? b[type].rich_text : [];
+      const txt = rich.map((r) => r.plain_text).join("");
+      if (type === "numbered_list_item") {
+        num += 1;
+        lines.push(num + ". " + txt);
+      } else if (type === "bulleted_list_item") {
+        num = 0;
+        lines.push("• " + txt);
+      } else if (type === "to_do") {
+        num = 0;
+        lines.push((b.to_do && b.to_do.checked ? "☑ " : "☐ ") + txt);
+      } else {
+        // 문단·제목·인용 등 — 빈 문단은 빈 줄로 보존(한 줄 띄우기 유지)
+        num = 0;
+        lines.push(txt);
+      }
     }
     cursor = data.has_more ? data.next_cursor : undefined;
   } while (cursor);
-  return text.trim();
+  // 빈 줄이 3줄 이상 연속이면 2줄로 정리
+  return lines.join("\n").replace(/\n{3,}/g, "\n\n").trim();
 }
 
 async function main() {

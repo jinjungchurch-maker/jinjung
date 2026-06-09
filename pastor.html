@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>담임목사 · 진중교회</title>
 <meta name="description" content="진중교회 담임목사 안창진 — 인사말과 목회 철학.">
-<link rel="icon" href="img/logo-color.png">
+<link rel="icon" type="image/png" href="img/favicon.png">
 <style>
 @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
 :root{
@@ -68,7 +68,7 @@ img{display:block;max-width:100%;}
 .pastor-greet .role{display:inline-block;font-size:13px;font-weight:800;letter-spacing:.04em;color:#fff;background:linear-gradient(135deg,var(--navy),var(--sky));padding:7px 16px;border-radius:30px;}
 .pastor-greet h2{font-size:clamp(24px,4.4vw,34px);font-weight:800;letter-spacing:-.015em;margin:16px 0 18px;line-height:1.25;}
 .pastor-greet h2 b{color:var(--navy);}
-.pastor-greet p{font-size:16px;color:var(--ink2);margin-bottom:14px;line-height:1.9;}
+.pastor-greet p{font-size:18px;color:var(--ink2);margin-bottom:15px;line-height:1.95;}
 .pastor-greet .sign{margin-top:24px;font-size:16px;color:var(--ink);font-weight:700;}
 .pastor-greet .sign b{font-size:20px;font-weight:800;letter-spacing:.02em;margin-left:4px;}
 
@@ -76,10 +76,19 @@ img{display:block;max-width:100%;}
 .cv{margin-top:30px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px 26px;box-shadow:0 30px 60px -50px rgba(16,21,28,.5);}
 .cv .cv-t{font-size:13px;font-weight:800;letter-spacing:.1em;color:var(--sky);text-transform:uppercase;margin-bottom:14px;}
 .cv ul{list-style:none;}
-.cv li{position:relative;padding:8px 0 8px 22px;font-size:15px;color:var(--ink2);border-bottom:1px dashed var(--line);}
+.cv li{position:relative;padding:9px 0 9px 22px;font-size:16.5px;color:var(--ink2);border-bottom:1px dashed var(--line);}
 .cv li:last-child{border:none;}
 .cv li::before{content:"";position:absolute;left:2px;top:15px;width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--sky));}
 .cv li b{color:var(--ink);font-weight:700;}
+
+/* 설교 한 편 */
+.sermon-sec{background:var(--paper);border-top:1px solid var(--line);}
+.sermon-quote{position:relative;overflow:hidden;max-width:860px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-left:4px solid var(--sky);border-radius:var(--r);padding:clamp(30px,5vw,54px);box-shadow:0 36px 72px -54px rgba(16,21,28,.5);}
+.sermon-quote .sq-mark{position:absolute;top:-6px;right:24px;font-size:140px;line-height:1;color:rgba(47,143,214,.12);font-family:Georgia,'Times New Roman',serif;pointer-events:none;}
+.sermon-quote h3{font-size:clamp(22px,3.6vw,29px);font-weight:800;color:var(--navy);letter-spacing:-.01em;position:relative;}
+.sermon-quote .sq-ref{font-size:14.5px;color:var(--sky);font-weight:700;margin:8px 0 24px;}
+.sermon-quote p{font-size:18px;color:var(--ink2);line-height:1.95;margin-bottom:16px;position:relative;}
+.sermon-quote p:last-child{margin-bottom:0;}
 
 /* 목회 철학 */
 .phil-wrap{background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
@@ -96,7 +105,7 @@ img{display:block;max-width:100%;}
 .pcard:nth-child(4) .no{background:linear-gradient(135deg,var(--sky),#1f6fb0);}
 .pcard:nth-child(5) .no{background:linear-gradient(135deg,var(--red),#a81b21);}
 .pcard h4{font-size:17px;font-weight:800;margin-bottom:8px;}
-.pcard p{font-size:14.5px;color:var(--ink2);line-height:1.7;}
+.pcard p{font-size:16.5px;color:var(--ink2);line-height:1.8;}
 
 .back{display:inline-flex;align-items:center;gap:8px;margin-top:46px;font-weight:700;color:var(--sky);}
 .back svg{width:18px;height:18px;}
@@ -171,6 +180,23 @@ img{display:block;max-width:100%;}
           </ul>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- 설교 한 편 -->
+  <section class="sermon-sec">
+    <div class="pwrap">
+      <div class="shead reveal">
+        <p class="kick">Sermon</p>
+        <h2>설교 한 편</h2>
+      </div>
+      <figure class="sermon-quote reveal">
+        <div class="sq-mark">”</div>
+        <h3>하나님이 당신을 사랑하십니다</h3>
+        <p class="sq-ref">요한복음 3:16 설교 中</p>
+        <p>우리는 작은 물건 하나를 사기 위해서도 값을 지불합니다. 비용을 지불한 후에야 우리는 그것을 소유합니다. 하나님은 우리에게 영원한 생명을 주시기 위해 값을 지불하셨습니다. 독생자 예수님을 내어주셨습니다. 우리는 예수님의 생명과 맞바꾼 사람들입니다. 사고가 발생할 때 순직하는 사람들이 있습니다. 그분들의 생명, 목숨 값을 계산할 수 있겠습니까? 그것은 세상 어떤 것과도 바꿀 수 없습니다.</p>
+        <p>하나님은 아들의 목숨과 우리의 생명을 바꾸셨습니다. 아들의 목숨과 여러분의 생명을 바꾸셨습니다. 여러분은 얼마를 받으면 자녀의 목숨과 바꿀 수 있습니까? 값을 계산할 수 있겠습니까? 계산을 할 수 없습니다. 그래서 하나님의 사랑은 값 없이 주시는 선물, 은혜입니다. 다른 말로는 설명이 되지 않습니다.</p>
+      </figure>
     </div>
   </section>
 
