@@ -147,14 +147,14 @@ img{display:block;max-width:100%;}
   <div class="in">
     <p class="kick">Our History</p>
     <h1>진중교회의 발자취</h1>
-    <p>1964년 한 알의 밀알로 시작해, 60년을 마을과 함께 걸어왔습니다.</p>
+    <p>1964년 한 알의 밀알로 시작해 지금까지 마을과 함께 걸어왔습니다.</p>
   </div>
 </header>
 
 <main class="wrap">
 
   <div class="intro reveal">
-    <div class="yr">60<span>주년</span></div>
+    <div class="yr" id="anniv">61<span>주년</span></div>
     <p>1964년 9월 27일 설립된 진중교회는 운길산 자락 조안면에서<br>네 시기를 지나며 예배와 섬김의 길을 이어 왔습니다.</p>
   </div>
 
@@ -229,24 +229,6 @@ img{display:block;max-width:100%;}
     </div>
   </div>
 
-  <!-- 정관 · 주보 문서 -->
-  <div class="docs reveal">
-    <a class="doc" href="bylaws.html">
-      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M9 13h6M9 17h6"/></svg></span>
-      <div><div class="t">교회 정관</div><div class="d">2019 제정 · 2024 개정 · 전문 보기 →</div></div>
-    </a>
-    <a class="doc" href="bulletin.html">
-      <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
-      <div><div class="t">주보</div><div class="d">매주 주보 보기 →</div></div>
-    </a>
-  </div>
-
-  <div class="vision reveal">
-    <h2>“용서, 사랑의 시작입니다”</h2>
-    <p>60년의 발자취를 기억하며, 가정과 세상을 건강하게 세우는 교회로 나아갑니다.</p>
-    <p class="vref">이사야 55:7 · 에베소서 4:31–32</p>
-  </div>
-
   <a class="back" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>홈으로 돌아가기</a>
 
 </main>
@@ -260,6 +242,13 @@ const mb=document.getElementById('menuBtn'), nl=document.getElementById('navLink
 mb.addEventListener('click',()=>nl.classList.toggle('open'));
 const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.08});
 document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+/* 창립(1964.9.27) 기준 주년 자동 계산 — 매년 창립일이 지나면 +1 */
+(function(){
+  var n=new Date(), y=n.getFullYear()-1964;
+  if(n < new Date(n.getFullYear(),8,27)) y--;   // 9월 27일 이전이면 아직 올해 주년 전
+  var el=document.getElementById('anniv');
+  if(el && el.firstChild) el.firstChild.nodeValue=y;
+})();
 </script>
 </body>
 </html>

@@ -354,7 +354,7 @@ section{position:relative;}
   <div class="footer-in">
     <div>
       <div class="fb"><img src="img/logo-white.png" alt=""></div>
-      <div class="fcol">하나님의 사랑으로 마을을 섬기는 교회<br>“네 자녀에게 부지런히 가르치라” (신명기 6:4–9)</div>
+      <div class="fcol">하나님의 사랑으로 마을을 섬기는 교회<br>“용서, 사랑의 시작입니다” (이사야 55:7 · 에베소서 4:31–32)</div>
     </div>
     <div class="fcol">
       <b style="color:#fff;">찾아오시는 길</b><br>
@@ -381,21 +381,34 @@ nl.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>nl.classList.
 const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.12});
 document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 
-/* 유튜브 최신 영상 (오류 153 대응: nocookie 도메인 + origin 파라미터 + 다중 프록시) */
+/* 유튜브 최신 영상 — ①빌드 시 저장본(youtube-data.json) 먼저 표시 ②실시간 프록시로 최신화 */
 const CHANNEL_ID="UCCxbiZWKg0XgU8oAMEiSwUQ";
 (function(){
   const feed="https://www.youtube.com/feeds/videos.xml?channel_id="+CHANNEL_ID;
   const proxies=[
+    u=>"https://api.codetabs.com/v1/proxy/?quest="+encodeURIComponent(u),
     u=>"https://api.allorigins.win/raw?url="+encodeURIComponent(u),
     u=>"https://corsproxy.io/?url="+encodeURIComponent(u),
     u=>"https://thingproxy.freeboard.io/fetch/"+u
   ];
-  function embed(boxId,titleId,vid,title){
+  function embed(boxId,vid,title){
     const o=encodeURIComponent(location.origin);
     document.getElementById(boxId).innerHTML=
       '<iframe src="https://www.youtube-nocookie.com/embed/'+vid+'?rel=0&origin='+o+'" title="'+(title||'').replace(/"/g,'')+'" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
-    document.getElementById(titleId).textContent=title||'영상';
   }
+  function apply(items){
+    if(!items||!items.length)return;
+    var s=items[0], p=items[1]||items[0];
+    embed("sermon-box",s.id,s.title);
+    document.getElementById("sermon-title").textContent=s.title||"진중교회 설교";
+    embed("praise-box",p.id,p.title);
+    document.getElementById("praise-title").textContent=p.title||"진중교회 찬양";
+    var hs=document.getElementById('hero-sermon');
+    if(hs&&s.title) hs.textContent="이번 주 설교 · "+s.title;
+  }
+  /* ① 빌드 때 저장된 최신본 먼저 (확실히 보임) */
+  fetch('youtube-data.json',{cache:'no-store'}).then(r=>r.ok?r.json():Promise.reject()).then(d=>apply(d&&d.videos)).catch(()=>{});
+  /* ② 가능하면 실시간으로 더 최신 영상으로 교체 */
   function tryP(i){
     if(i>=proxies.length)return;
     fetch(proxies[i](feed)).then(r=>r.ok?r.text():Promise.reject()).then(xml=>{
@@ -404,10 +417,7 @@ const CHANNEL_ID="UCCxbiZWKg0XgU8oAMEiSwUQ";
       if(!es.length)return tryP(i+1);
       const items=es.map(e=>({id:(e.querySelector("videoId")||{}).textContent||"",title:(e.querySelector("title")||{}).textContent||"영상"})).filter(x=>x.id);
       if(!items.length)return tryP(i+1);
-      embed("sermon-box","sermon-title",items[0].id,items[0].title);
-      embed("praise-box","praise-title",(items[1]||items[0]).id,(items[1]||items[0]).title);
-      var hs=document.getElementById('hero-sermon');
-      if(hs&&items[0].title) hs.textContent="이번 주 설교 · "+items[0].title;
+      apply(items);
     }).catch(()=>tryP(i+1));
   }
   tryP(0);

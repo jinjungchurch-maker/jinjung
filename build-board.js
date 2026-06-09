@@ -31,11 +31,46 @@ function findProp(props, candidates) {
   return null;
 }
 
-if (!NOTION_TOKEN) {
-  console.error("⚠️  NOTION_TOKEN 환경변수가 없습니다. board-data.json을 빈 배열로 만듭니다.");
-  fs.writeFileSync("board-data.json", "[]");
-  process.exit(0);
+// ---- 유튜브 최신 영상 → youtube-data.json (노션 토큰 불필요) ----
+const YT_CHANNEL = process.env.YT_CHANNEL_ID || "UCCxbiZWKg0XgU8oAMEiSwUQ";
+function decodeEntities(s) {
+  return (s || "")
+    .replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&apos;/g, "'");
 }
+async function buildYoutube() {
+  try {
+    const res = await fetch(
+      "https://www.youtube.com/feeds/videos.xml?channel_id=" + YT_CHANNEL
+    );
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const xml = await res.text();
+    const entries = xml.split("<entry>").slice(1);
+    const videos = entries
+      .map((e) => {
+        const id = (e.match(/<yt:videoId>([^<]+)<\/yt:videoId>/) || [])[1] || "";
+        const title = decodeEntities((e.match(/<title>([^<]+)<\/title>/) || [])[1] || "");
+        return id ? { id, title } : null;
+      })
+      .filter(Boolean)
+      .slice(0, 6);
+    fs.writeFileSync(
+      "youtube-data.json",
+      JSON.stringify({ channelId: YT_CHANNEL, updated: new Date().toISOString(), videos }, null, 2)
+    );
+    console.log(`✅ youtube-data.json 생성 — 영상 ${videos.length}개`);
+  } catch (e) {
+    console.error("유튜브 피드 실패:", e.message);
+    if (!fs.existsSync("youtube-data.json"))
+      fs.writeFileSync(
+        "youtube-data.json",
+        JSON.stringify({ channelId: YT_CHANNEL, updated: null, videos: [] }, null, 2)
+      );
+  }
+}
+
+// 같은 빌드 내 파일명 중복 추적 (다른 파일이 같은 이름일 때만 번호 추가)
+const usedFiles = new Map();
 
 // 파일을 다운로드하여 files/ 폴더에 저장, 사이트 내 경로 반환
 async function downloadFile(srcUrl, origName) {
@@ -48,11 +83,21 @@ async function downloadFile(srcUrl, origName) {
     const um = srcUrl.split("?")[0].match(/\.[a-zA-Z0-9]{1,8}$/);
     if (um) ext = um[0];
   }
-  const base = origName.replace(/\.[a-zA-Z0-9]{1,8}$/, "").replace(/[^\w가-힣.-]/g, "_");
-  // 중복 방지용 짧은 해시
-  const hash = Math.abs(hashStr(srcUrl)).toString(36).slice(0, 6);
-  const fname = `${base}_${hash}${ext}`;
-  const dest = `files/${fname}`;
+  // 원래 파일명을 그대로 유지 (공백 → _, 위험 문자만 제거, 한글 보존)
+  const base = origName
+    .replace(/\.[a-zA-Z0-9]{1,8}$/, "")
+    .replace(/\s+/g, "_")
+    .replace(/[^\w가-힣._-]/g, "");
+  let fname = `${base}${ext}`;
+  let dest = `files/${fname}`;
+  // 이름은 같은데 실제로 다른 파일이면 _2, _3 … 으로만 구분
+  let n = 2;
+  while (usedFiles.has(dest) && usedFiles.get(dest) !== srcUrl) {
+    fname = `${base}_${n}${ext}`;
+    dest = `files/${fname}`;
+    n++;
+  }
+  usedFiles.set(dest, srcUrl);
   if (fs.existsSync(dest)) return dest;
 
   const res = await fetch(srcUrl);
@@ -212,8 +257,17 @@ async function main() {
   console.log(`✅ board-data.json 생성 완료 — 글 ${results.length}개`);
 }
 
-main().catch((e) => {
+async function run() {
+  await buildYoutube(); // 토큰 없이도 유튜브는 항상 갱신
+  if (!NOTION_TOKEN) {
+    console.error("⚠️  NOTION_TOKEN 환경변수가 없습니다. board-data.json을 빈 배열로 만듭니다.");
+    fs.writeFileSync("board-data.json", "[]");
+    return;
+  }
+  await main();
+}
+
+run().catch((e) => {
   console.error(e);
-  fs.writeFileSync("board-data.json", "[]");
-  process.exit(0);
+  if (!fs.existsSync("board-data.json")) fs.writeFileSync("board-data.json", "[]");
 });

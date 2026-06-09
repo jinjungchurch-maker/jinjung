@@ -68,6 +68,14 @@ img{display:block;max-width:100%;}
 .filelink{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;font-weight:600;color:var(--navy);background:#eef4fb;padding:8px 14px;border-radius:10px;transition:.18s;}
 .filelink:hover{background:#dceafa;}
 .filelink svg{width:16px;height:16px;}
+/* 최신 글 강조 + 첨부 인라인 미리보기 */
+.post-card.featured{border-color:var(--sky);box-shadow:0 24px 54px -34px rgba(47,143,214,.55);}
+.post-card.featured .post-head{display:flex;flex-direction:column;}
+.newtag{align-self:flex-start;font-size:11px;font-weight:800;letter-spacing:.04em;color:#fff;background:linear-gradient(135deg,var(--navy),var(--sky));padding:3px 10px;border-radius:20px;margin-bottom:8px;}
+.preview{margin-top:16px;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#0d1117;}
+.preview img{width:100%;height:auto;display:block;background:#fff;}
+.preview iframe{width:100%;height:78vh;min-height:460px;border:0;display:block;background:#fff;}
+.preview.video iframe{height:auto;aspect-ratio:16/9;min-height:0;}
 .post:hover{transform:translateY(-3px);border-color:var(--sky);box-shadow:0 20px 44px -32px rgba(16,21,28,.5);}
 .post .ic{width:46px;height:46px;border-radius:13px;flex:none;display:grid;place-items:center;background:#eef4fb;color:var(--navy);}
 .post .ic svg{width:22px;height:22px;}
@@ -162,6 +170,16 @@ const arrow='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-w
 
 function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
+// 첨부 1개를 화면에 바로 펼쳐 보여줌 (이미지·PDF·유튜브)
+function preview(u){
+  const ext=(u.split('?')[0].split('.').pop()||'').toLowerCase();
+  const yt=u.match(/(?:youtu\.be\/|[?&]v=|embed\/)([\w-]{11})/);
+  if(yt) return '<div class="preview video"><iframe src="https://www.youtube-nocookie.com/embed/'+yt[1]+'?rel=0" title="영상" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe></div>';
+  if(['jpg','jpeg','png','gif','webp','svg'].includes(ext)) return '<div class="preview"><img src="'+u+'" alt="" loading="lazy"></div>';
+  if(ext==='pdf') return '<div class="preview"><iframe src="'+u+'#view=FitH" title="첨부 미리보기"></iframe></div>';
+  return '';
+}
+
 function render(posts){
   const list=document.getElementById('list');
   const items=(posts||[]).filter(p=>p.category===cur);
@@ -173,13 +191,16 @@ function render(posts){
     const hasFile=p.attachments&&p.attachments.length>0;
     const hasText=p.content&&p.content.trim().length>0;
     const meta=[fmtDate(p.date)].filter(Boolean).join(" · ");
+    const newest=(i===0);   // 가장 최근 글
 
-    // 본문 텍스트가 있으면 카드 안에 펼쳐 보여줌
     let bodyExtra="";
     if(hasText){
       bodyExtra='<div class="post-text">'+esc(p.content).replace(/\n/g,'<br>')+'</div>';
     }
-    // 첨부가 있으면 다운로드/보기 링크
+    // 최신 글이면 첫 첨부를 바로 펼쳐 보여줌 (두 번 클릭 불필요)
+    let featured="";
+    if(newest&&hasFile){ featured=preview(p.attachments[0]); }
+    // 첨부 다운로드/보기 링크
     let fileLinks="";
     if(hasFile){
       fileLinks='<div class="post-files">'+p.attachments.map((u,k)=>{
@@ -188,7 +209,8 @@ function render(posts){
       }).join('')+'</div>';
     }
 
-    return '<div class="post-card"><div class="post-head"><span class="cat">'+p.category+'</span><div class="t">'+esc(p.title||'제목 없음')+'</div>'+(meta?'<div class="meta">'+meta+'</div>':'')+'</div>'+bodyExtra+fileLinks+'</div>';
+    const head='<div class="post-head">'+(newest?'<span class="newtag">최신</span>':'')+'<span class="cat">'+p.category+'</span><div class="t">'+esc(p.title||'제목 없음')+'</div>'+(meta?'<div class="meta">'+meta+'</div>':'')+'</div>';
+    return '<div class="post-card'+(newest?' featured':'')+'">'+head+bodyExtra+featured+fileLinks+'</div>';
   }).join('');
 }
 
