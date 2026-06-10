@@ -39,34 +39,54 @@ function decodeEntities(s) {
     .replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&apos;/g, "'");
 }
 async function buildYoutube() {
-  try {
-    const res = await fetch(
-      "https://www.youtube.com/feeds/videos.xml?channel_id=" + YT_CHANNEL
-    );
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    const xml = await res.text();
-    const entries = xml.split("<entry>").slice(1);
-    const videos = entries
-      .map((e) => {
-        const id = (e.match(/<yt:videoId>([^<]+)<\/yt:videoId>/) || [])[1] || "";
-        const title = decodeEntities((e.match(/<title>([^<]+)<\/title>/) || [])[1] || "");
-        return id ? { id, title } : null;
-      })
-      .filter(Boolean)
-      .slice(0, 6);
-    fs.writeFileSync(
-      "youtube-data.json",
-      JSON.stringify({ channelId: YT_CHANNEL, updated: new Date().toISOString(), videos }, null, 2)
-    );
-    console.log(`✅ youtube-data.json 생성 — 영상 ${videos.length}개`);
-  } catch (e) {
-    console.error("유튜브 피드 실패:", e.message);
+  const feed = "https://www.youtube.com/feeds/videos.xml?channel_id=" + YT_CHANNEL;
+  const sources = [
+    feed,
+    "https://api.codetabs.com/v1/proxy/?quest=" + encodeURIComponent(feed),
+    "https://api.allorigins.win/raw?url=" + encodeURIComponent(feed),
+    "https://corsproxy.io/?url=" + encodeURIComponent(feed),
+  ];
+  const UA =
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36";
+  let xml = "";
+  for (const url of sources) {
+    try {
+      const res = await fetch(url, {
+        headers: { "User-Agent": UA, Accept: "application/xml,text/xml,*/*" },
+      });
+      if (!res.ok) continue;
+      const t = await res.text();
+      if (t && t.indexOf("<yt:videoId>") !== -1) {
+        xml = t;
+        break;
+      }
+    } catch (e) {
+      /* 다음 소스 시도 */
+    }
+  }
+  if (!xml) {
+    console.error("유튜브 피드 실패: 모든 소스에서 영상을 가져오지 못함");
     if (!fs.existsSync("youtube-data.json"))
       fs.writeFileSync(
         "youtube-data.json",
         JSON.stringify({ channelId: YT_CHANNEL, updated: null, videos: [] }, null, 2)
       );
+    return;
   }
+  const entries = xml.split("<entry>").slice(1);
+  const videos = entries
+    .map((e) => {
+      const id = (e.match(/<yt:videoId>([^<]+)<\/yt:videoId>/) || [])[1] || "";
+      const title = decodeEntities((e.match(/<title>([^<]+)<\/title>/) || [])[1] || "");
+      return id ? { id, title } : null;
+    })
+    .filter(Boolean)
+    .slice(0, 6);
+  fs.writeFileSync(
+    "youtube-data.json",
+    JSON.stringify({ channelId: YT_CHANNEL, updated: new Date().toISOString(), videos }, null, 2)
+  );
+  console.log(`✅ youtube-data.json 생성 — 영상 ${videos.length}개`);
 }
 
 // 같은 빌드 내 파일명 중복 추적 (다른 파일이 같은 이름일 때만 번호 추가)
