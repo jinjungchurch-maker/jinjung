@@ -176,6 +176,8 @@ const fileIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strok
 const arrow='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>';
 
 function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+// **굵게** 마커를 <strong>으로 변환 (esc로 안전하게 이스케이프한 뒤 적용)
+function mdInline(s){ return s.replace(/\*\*([^*\n]+?)\*\*/g,'<strong>$1</strong>'); }
 
 // HTML 첨부(가정예배지) 높이를 내용에 맞춰 늘려 프레임/내부 스크롤 제거
 function fitFrame(f){
@@ -222,7 +224,7 @@ function cardHTML(p, i){
     const htmlAtt=files.find(u=>/\.html?(\?|$)/i.test(u));
     media+=preview(htmlAtt||files[0]);
   }
-  let bodyExtra= hasText ? '<div class="post-text">'+esc(text).replace(/\n/g,'<br>')+'</div>' : '';
+  let bodyExtra= hasText ? '<div class="post-text">'+mdInline(esc(text)).replace(/\n/g,'<br>')+'</div>' : '';
   let fileLinks= hasFile ? '<div class="post-files">'+files.map((u,k)=>{
       const name=decodeURIComponent(u.split('/').pop().split('?')[0])||('첨부'+(k+1));
       return '<a class="filelink" href="'+u+'" target="_blank" rel="noopener">'+fileIcon+' '+esc(name)+'</a>';

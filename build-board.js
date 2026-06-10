@@ -157,7 +157,13 @@ async function getPageText(pageId) {
     for (const b of data.results) {
       const type = b.type;
       const rich = b[type] && b[type].rich_text ? b[type].rich_text : [];
-      const txt = rich.map((r) => r.plain_text).join("");
+      const txt = rich
+        .map((r) => {
+          const t = r.plain_text || "";
+          // 굵게(볼드)는 **마커**로 보존 → 화면에서 <strong>으로 변환
+          return t && r.annotations && r.annotations.bold ? "**" + t + "**" : t;
+        })
+        .join("");
       if (type === "numbered_list_item") {
         num += 1;
         lines.push(num + ". " + txt);
