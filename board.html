@@ -83,6 +83,13 @@ img{display:block;max-width:100%;}
 /* HTML 첨부(가정예배지)는 테두리·내부 스크롤 없이 페이지에 자연스럽게 — 높이 자동 맞춤 */
 .preview-html{margin-top:18px;}
 .preview-html .hframe{width:100%;border:0;display:block;background:transparent;min-height:300px;}
+/* 이미지 갤러리 (주보 등 여러 장 좌우 넘김) */
+.gallery{position:relative;margin-top:16px;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#0d1117;}
+.gallery .gal-track img{width:100%;height:auto;display:block;background:#fff;}
+.gal-nav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border:0;border-radius:50%;background:rgba(0,0,0,.45);color:#fff;font-size:28px;line-height:1;cursor:pointer;display:grid;place-items:center;padding:0;transition:background .2s;}
+.gal-nav:hover{background:rgba(0,0,0,.68);}
+.gal-nav.prev{left:10px;} .gal-nav.next{right:10px;}
+.gal-count{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.55);color:#fff;font-size:12.5px;font-weight:700;padding:4px 13px;border-radius:20px;}
 .post:hover{transform:translateY(-3px);border-color:var(--sky);box-shadow:0 20px 44px -32px rgba(16,21,28,.5);}
 .post .ic{width:46px;height:46px;border-radius:13px;flex:none;display:grid;place-items:center;background:#eef4fb;color:var(--navy);}
 .post .ic svg{width:22px;height:22px;}
@@ -179,13 +186,45 @@ function esc(s){return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replac
 // **굵게** 마커를 <strong>으로 변환 (esc로 안전하게 이스케이프한 뒤 적용)
 function mdInline(s){ return s.replace(/\*\*([^*\n]+?)\*\*/g,'<strong>$1</strong>'); }
 
+// 이미지 갤러리 (여러 장이면 좌우 넘김, 1장이면 그대로)
+function galleryHTML(imgs){
+  if(imgs.length===1) return '<div class="preview"><img src="'+imgs[0]+'" alt="" loading="lazy"></div>';
+  const slides=imgs.map((u,k)=>'<img src="'+u+'" alt="" loading="lazy" style="display:'+(k===0?'block':'none')+'">').join('');
+  return '<div class="gallery" data-i="0">'
+    +'<div class="gal-track">'+slides+'</div>'
+    +'<button class="gal-nav prev" onclick="galStep(this,-1)" aria-label="이전">\u2039</button>'
+    +'<button class="gal-nav next" onclick="galStep(this,1)" aria-label="다음">\u203a</button>'
+    +'<div class="gal-count"><span class="cur">1</span> / '+imgs.length+'</div>'
+    +'</div>';
+}
+function galStep(btn,dir){
+  const g=btn.closest('.gallery'); if(!g)return;
+  const imgs=g.querySelectorAll('.gal-track img');
+  const i=(parseInt(g.dataset.i,10)+dir+imgs.length)%imgs.length;
+  for(let k=0;k<imgs.length;k++) imgs[k].style.display=(k===i?'block':'none');
+  g.dataset.i=i;
+  g.querySelector('.gal-count .cur').textContent=i+1;
+}
+// 모바일 스와이프
+let _galX=0;
+document.addEventListener('touchstart',function(e){ const t=e.target.closest&&e.target.closest('.gallery'); if(t)_galX=e.changedTouches[0].clientX; },{passive:true});
+document.addEventListener('touchend',function(e){ const g=e.target.closest&&e.target.closest('.gallery'); if(!g)return; const dx=e.changedTouches[0].clientX-_galX; if(Math.abs(dx)>40){ const n=g.querySelector(dx<0?'.gal-nav.next':'.gal-nav.prev'); if(n)galStep(n,dx<0?1:-1); } },{passive:true});
+
 // HTML 첨부(가정예배지) 높이를 내용에 맞춰 늘려 프레임/내부 스크롤 제거
+// HTML 첨부(가정예배지) 표시 보정: 하늘색 배경 제거→흰 배경, 카드 전체폭, 높이 자동
 function fitFrame(f){
   try{
     var d=f.contentDocument||f.contentWindow.document;
-    var h=Math.max(d.body.scrollHeight,d.documentElement.scrollHeight);
-    f.style.height=(h+24)+'px';
-    setTimeout(function(){ try{ f.style.height=(Math.max(d.body.scrollHeight,d.documentElement.scrollHeight)+24)+'px'; }catch(e){} }, 900); // 폰트 로딩 후 보정
+    if(!d.getElementById('board-fit')){
+      var st=d.createElement('style'); st.id='board-fit';
+      st.textContent=
+        'html,body{background:#fff !important;margin:0 !important;padding:0 !important;}'+
+        '.sheet{max-width:none !important;margin:0 !important;box-shadow:none !important;border:none !important;border-radius:0 !important;}'+
+        '.dlbar{max-width:none !important;margin:0 0 10px !important;padding:0 clamp(16px,4.5vw,46px) !important;}';
+      (d.head||d.documentElement).appendChild(st);
+    }
+    function setH(){ try{ f.style.height=(d.body.scrollHeight+8)+'px'; }catch(e){} }
+    setH(); setTimeout(setH,120); setTimeout(setH,900);   // 폰트 로딩 후 보정
   }catch(e){ f.style.height='85vh'; }
 }
 window.addEventListener('resize',function(){ document.querySelectorAll('.hframe').forEach(fitFrame); });
@@ -208,27 +247,33 @@ function preview(u){
   return '';
 }
 
-// 카드 하나의 HTML 생성 (i===0 이면 '최신' 강조 + 첫 파일 인라인)
+// 카드 하나의 HTML 생성 (i===0 이면 '최신' 강조)
 function cardHTML(p, i){
   const newest=(i===0);
   const yi=findYt(p);
-  const files=(p.attachments||[]).filter(u=>!ytId(u));
-  const hasFile=files.length>0;
+  const isImg=(u)=>/\.(jpe?g|png|gif|webp|svg)(\?|$)/i.test(u);
+  const atts=p.attachments||[];
+  const imgs=atts.filter(isImg);                          // 이미지(주보 등)
+  const others=atts.filter(u=>!isImg(u)&&!ytId(u));       // 그 외 파일(PDF·HTML 등)
   const meta=[fmtDate(p.date)].filter(Boolean).join(" · ");
   let text=(p.content||'');
   if(yi) text=text.replace(/https?:\/\/\S*(?:youtu\.be|youtube\.com)\/\S+/g,'').replace(/\n{3,}/g,'\n\n').trim();
   const hasText=text.length>0;
+
   let media="";
-  if(yi) media+=ytEmbed(yi);
-  if(newest&&hasFile){
-    const htmlAtt=files.find(u=>/\.html?(\?|$)/i.test(u));
-    media+=preview(htmlAtt||files[0]);
+  if(yi) media+=ytEmbed(yi);                              // 유튜브 바로보기
+  if(imgs.length) media+=galleryHTML(imgs);              // 이미지: 모든 글에서 갤러리(좌우 넘김)
+  if(newest && others.length){                            // 최신 글: HTML(가정예배지)/PDF 인라인
+    const htmlAtt=others.find(u=>/\.html?(\?|$)/i.test(u));
+    media+=preview(htmlAtt||others[0]);
   }
   let bodyExtra= hasText ? '<div class="post-text">'+mdInline(esc(text)).replace(/\n/g,'<br>')+'</div>' : '';
-  let fileLinks= hasFile ? '<div class="post-files">'+files.map((u,k)=>{
+  // 다운로드 링크는 이미지 외 파일만 (이미지는 갤러리로 보여주므로 새창 안 열림)
+  let fileLinks= others.length ? '<div class="post-files">'+others.map((u,k)=>{
       const name=decodeURIComponent(u.split('/').pop().split('?')[0])||('첨부'+(k+1));
       return '<a class="filelink" href="'+u+'" target="_blank" rel="noopener">'+fileIcon+' '+esc(name)+'</a>';
     }).join('')+'</div>' : '';
+
   const head='<div class="post-head">'+(newest?'<span class="newtag">최신</span>':'')+'<span class="cat">'+p.category+'</span><div class="t">'+esc(p.title||'제목 없음')+'</div>'+(meta?'<div class="meta">'+meta+'</div>':'')+'</div>';
   return '<div class="post-card'+(newest?' featured':'')+'">'+head+media+bodyExtra+fileLinks+'</div>';
 }
