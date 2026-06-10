@@ -204,10 +204,37 @@ function preview(u){
   return '';
 }
 
+// 카드 하나의 HTML 생성 (i===0 이면 '최신' 강조 + 첫 파일 인라인)
+function cardHTML(p, i){
+  const newest=(i===0);
+  const yi=findYt(p);
+  const files=(p.attachments||[]).filter(u=>!ytId(u));
+  const hasFile=files.length>0;
+  const meta=[fmtDate(p.date)].filter(Boolean).join(" · ");
+  let text=(p.content||'');
+  if(yi) text=text.replace(/https?:\/\/\S*(?:youtu\.be|youtube\.com)\/\S+/g,'').replace(/\n{3,}/g,'\n\n').trim();
+  const hasText=text.length>0;
+  let media="";
+  if(yi) media+=ytEmbed(yi);
+  if(newest&&hasFile){
+    const htmlAtt=files.find(u=>/\.html?(\?|$)/i.test(u));
+    media+=preview(htmlAtt||files[0]);
+  }
+  let bodyExtra= hasText ? '<div class="post-text">'+esc(text).replace(/\n/g,'<br>')+'</div>' : '';
+  let fileLinks= hasFile ? '<div class="post-files">'+files.map((u,k)=>{
+      const name=decodeURIComponent(u.split('/').pop().split('?')[0])||('첨부'+(k+1));
+      return '<a class="filelink" href="'+u+'" target="_blank" rel="noopener">'+fileIcon+' '+esc(name)+'</a>';
+    }).join('')+'</div>' : '';
+  const head='<div class="post-head">'+(newest?'<span class="newtag">최신</span>':'')+'<span class="cat">'+p.category+'</span><div class="t">'+esc(p.title||'제목 없음')+'</div>'+(meta?'<div class="meta">'+meta+'</div>':'')+'</div>';
+  return '<div class="post-card'+(newest?' featured':'')+'">'+head+media+bodyExtra+fileLinks+'</div>';
+}
+
+const BATCH=3;   // 처음 3개, 스크롤 시 3개씩 추가
+
 function render(posts){
   const list=document.getElementById('list');
   const items=(posts||[]).filter(p=>p.category===cur);
-  // 화면에서도 날짜 최신순으로 한 번 더 정렬 (날짜 없으면 작성시각 보조)
+  // 날짜 최신순 정렬 (날짜 없으면 작성시각 보조)
   items.sort(function(a,b){
     var ka=(a.date||a.created||''), kb=(b.date||b.created||'');
     if(ka!==kb) return kb.localeCompare(ka);
@@ -217,37 +244,34 @@ function render(posts){
     list.innerHTML='<div class="empty"><div class="ic">'+fileIcon+'</div><h3>아직 등록된 글이 없습니다</h3><p>노션에 글을 올리고 \u201C공개\u201D를 체크한 뒤 사이트를 다시 배포하면<br>이곳에 자동으로 나타납니다.</p></div>';
     return;
   }
-  list.innerHTML=items.map((p,i)=>{
-    const newest=(i===0);                                   // 가장 최근 글
-    const yi=findYt(p);                                     // 유튜브 영상(있으면)
-    const files=(p.attachments||[]).filter(u=>!ytId(u));    // 유튜브 외 실제 첨부파일
-    const hasFile=files.length>0;
-    const meta=[fmtDate(p.date)].filter(Boolean).join(" · ");
 
-    // 본문에서 유튜브 URL 자체는 빼고 표시 (이미 영상으로 재생되므로)
-    let text=(p.content||'');
-    if(yi) text=text.replace(/https?:\/\/\S*(?:youtu\.be|youtube\.com)\/\S+/g,'').replace(/\n{3,}/g,'\n\n').trim();
-    const hasText=text.length>0;
+  let shown=0;
+  list.innerHTML='';
+  // 스크롤 감지용 센티넬
+  const sentinel=document.createElement('div');
+  sentinel.style.height='1px';
+  list.after(sentinel);
 
-    let media="";
-    if(yi) media+=ytEmbed(yi);                              // 모든 글: 유튜브 바로보기
-    if(newest&&hasFile){                                    // 최신 글: 파일(HTML/PDF/이미지) 인라인
-      const htmlAtt=files.find(u=>/\.html?(\?|$)/i.test(u));
-      media+=preview(htmlAtt||files[0]);
+  function appendBatch(){
+    const slice=items.slice(shown, shown+BATCH);
+    list.insertAdjacentHTML('beforeend', slice.map((p,k)=>cardHTML(p, shown+k)).join(''));
+    shown+=slice.length;
+  }
+  function topUp(){
+    // 센티넬이 화면 근처에 보이는 동안 계속 채움 (짧은 화면 대비)
+    while(shown<items.length && sentinel.getBoundingClientRect().top <= window.innerHeight+300){
+      appendBatch();
     }
-    let bodyExtra= hasText ? '<div class="post-text">'+esc(text).replace(/\n/g,'<br>')+'</div>' : '';
-    let fileLinks= hasFile ? '<div class="post-files">'+files.map((u,k)=>{
-        const name=decodeURIComponent(u.split('/').pop().split('?')[0])||('첨부'+(k+1));
-        return '<a class="filelink" href="'+u+'" target="_blank" rel="noopener">'+fileIcon+' '+esc(name)+'</a>';
-      }).join('')+'</div>' : '';
+    if(shown>=items.length){ obs.disconnect(); sentinel.remove(); }
+  }
+  const obs=new IntersectionObserver(function(es){ if(es[0].isIntersecting) topUp(); }, {rootMargin:'300px'});
+  obs.observe(sentinel);
 
-    const head='<div class="post-head">'+(newest?'<span class="newtag">최신</span>':'')+'<span class="cat">'+p.category+'</span><div class="t">'+esc(p.title||'제목 없음')+'</div>'+(meta?'<div class="meta">'+meta+'</div>':'')+'</div>';
-    return '<div class="post-card'+(newest?' featured':'')+'">'+head+media+bodyExtra+fileLinks+'</div>';
-  }).join('');
+  appendBatch();   // 최초 3개만 표시 (스크롤하면 3개씩 더)
 }
 
-// board-data.json 읽기 (노션 빌드가 생성). 없으면 빈 상태 표시.
-fetch('board-data.json').then(r=>r.ok?r.json():Promise.reject()).then(data=>render(data)).catch(()=>render([]));
+// board-data.json 읽기 (노션 빌드가 생성). 캐시 무력화로 항상 최신본을 받음.
+fetch('board-data.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():Promise.reject()).then(data=>render(data)).catch(()=>render([]));
 </script>
 </body>
 </html>

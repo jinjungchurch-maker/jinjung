@@ -291,8 +291,22 @@ async function main() {
     return (b.created || "").localeCompare(a.created || "");
   });
 
-  fs.writeFileSync("board-data.json", JSON.stringify(results, null, 2));
-  console.log(`✅ board-data.json 생성 완료 — 글 ${results.length}개`);
+  // ── 카테고리별 표시 개수 제한 ───────────────────────────────
+  // 0 = 무제한(전체 표시). 숫자를 넣으면 카테고리마다 "최신 N개"만 사이트에 보입니다.
+  // 예: 30 → 설교·찬양·주보 등 각 카테고리에서 최신 30개만 표시.
+  // (오래된 글은 노션에는 그대로 남고, 사이트 게시판에만 안 보입니다.)
+  const MAX_PER_CATEGORY = 0;
+  let output = results;
+  if (MAX_PER_CATEGORY > 0) {
+    const counts = {};
+    output = results.filter((r) => {
+      counts[r.category] = (counts[r.category] || 0) + 1;
+      return counts[r.category] <= MAX_PER_CATEGORY;
+    });
+  }
+
+  fs.writeFileSync("board-data.json", JSON.stringify(output, null, 2));
+  console.log(`✅ board-data.json 생성 완료 — 글 ${output.length}개`);
 }
 
 async function run() {
