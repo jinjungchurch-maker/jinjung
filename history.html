@@ -91,6 +91,22 @@ img{display:block;max-width:100%;}
 .tl-text{font-size:17px;color:var(--ink2);margin-top:1px;line-height:1.7;}
 .tl-text b{color:var(--ink);font-weight:700;}
 .tl-row.big .tl-text{font-size:17.5px;}
+/* 시기별 사진 갤러리 */
+.eg-label{margin:22px 0 9px 2px;font-size:13.5px;font-weight:800;color:var(--navy);letter-spacing:.02em;}
+.era-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;}
+.eg-thumb{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;border:1px solid var(--line);background:#eef3f8;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease;}
+.eg-thumb:hover{transform:translateY(-2px);box-shadow:0 10px 22px -12px rgba(0,0,0,.4);}
+/* 라이트박스(클릭 시 크게 보기) */
+.lightbox{position:fixed;inset:0;z-index:1000;background:rgba(8,16,30,.93);display:flex;align-items:center;justify-content:center;}
+.lightbox[hidden]{display:none;}
+.lb-img{max-width:92vw;max-height:84vh;border-radius:8px;box-shadow:0 24px 70px -20px #000;}
+.lb-nav,.lb-close{position:absolute;border:0;background:rgba(255,255,255,.15);color:#fff;cursor:pointer;display:grid;place-items:center;border-radius:50%;line-height:1;padding:0;}
+.lb-nav{top:50%;transform:translateY(-50%);width:52px;height:52px;font-size:34px;}
+.lb-nav:hover,.lb-close:hover{background:rgba(255,255,255,.3);}
+.lb-prev{left:14px;} .lb-next{right:14px;}
+.lb-close{top:16px;right:16px;width:44px;height:44px;font-size:26px;}
+.lb-count{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);color:#fff;font-size:13px;font-weight:700;background:rgba(0,0,0,.45);padding:5px 14px;border-radius:20px;}
+@media(max-width:600px){.lb-nav{width:44px;height:44px;font-size:28px;}}
 
 .docs{margin-top:54px;display:grid;grid-template-columns:1fr 1fr;gap:18px;}
 @media(max-width:640px){.docs{grid-template-columns:1fr;}}
@@ -171,6 +187,14 @@ img{display:block;max-width:100%;}
       <div class="tl-row"><div class="tl-date">1970. 9.</div><div class="tl-text"><b>첫 번째 예배당을 건축하다</b> (10평).</div></div>
       <div class="tl-row"><div class="tl-date">1973.</div><div class="tl-text">②임춘성 전도사 부임하다. (1976. 5. 사임)</div></div>
     </div>
+    <div class="eg-label">태동기 사진</div>
+    <div class="era-gallery">
+      <img class="eg-thumb" src="img/hist1-01.jpg" loading="lazy" alt="태동기 사진 1">
+      <img class="eg-thumb" src="img/hist1-02.jpg" loading="lazy" alt="태동기 사진 2">
+      <img class="eg-thumb" src="img/hist1-03.jpg" loading="lazy" alt="태동기 사진 3">
+      <img class="eg-thumb" src="img/hist1-04.jpg" loading="lazy" alt="태동기 사진 4">
+      <img class="eg-thumb" src="img/hist1-05.jpg" loading="lazy" alt="태동기 사진 5">
+    </div>
   </div>
 
   <!-- 정착기 -->
@@ -189,6 +213,13 @@ img{display:block;max-width:100%;}
       <div class="tl-row"><div class="tl-date">1997. 4.</div><div class="tl-text"><b>세 번째 예배당 기공예배</b>를 드리다.</div></div>
       <div class="tl-row"><div class="tl-date">1997. 11. 25.</div><div class="tl-text">입당예배 드리다.</div></div>
     </div>
+    <div class="eg-label">정착기 사진</div>
+    <div class="era-gallery">
+      <img class="eg-thumb" src="img/hist2-01.jpg" loading="lazy" alt="정착기 사진 1">
+      <img class="eg-thumb" src="img/hist2-02.jpg" loading="lazy" alt="정착기 사진 2">
+      <img class="eg-thumb" src="img/hist2-03.jpg" loading="lazy" alt="정착기 사진 3">
+      <img class="eg-thumb" src="img/hist2-04.jpg" loading="lazy" alt="정착기 사진 4">
+    </div>
   </div>
 
   <!-- 도약기 -->
@@ -203,6 +234,16 @@ img{display:block;max-width:100%;}
       <div class="tl-row"><div class="tl-date">2013. 8. 6.</div><div class="tl-text">교회 온라인 카페 개설하다.</div></div>
       <div class="tl-row"><div class="tl-date">2019. 1. 6.</div><div class="tl-text"><b>교회정관 제정</b> · 운영위원회 조직하다 (9명, 담임목사 외 8명).</div></div>
       <div class="tl-row"><div class="tl-date">2020. 1.</div><div class="tl-text">채지현 전도사(아동부) 부임하다. (2020. 12. 사임)</div></div>
+    </div>
+    <div class="eg-label">도약기 사진</div>
+    <div class="era-gallery">
+      <img class="eg-thumb" src="img/hist3-01.jpg" loading="lazy" alt="도약기 사진 1">
+      <img class="eg-thumb" src="img/hist3-02.jpg" loading="lazy" alt="도약기 사진 2">
+      <img class="eg-thumb" src="img/hist3-03.jpg" loading="lazy" alt="도약기 사진 3">
+      <img class="eg-thumb" src="img/hist3-04.jpg" loading="lazy" alt="도약기 사진 4">
+      <img class="eg-thumb" src="img/hist3-05.jpg" loading="lazy" alt="도약기 사진 5">
+      <img class="eg-thumb" src="img/hist3-06.jpg" loading="lazy" alt="도약기 사진 6">
+      <img class="eg-thumb" src="img/hist3-07.jpg" loading="lazy" alt="도약기 사진 7">
     </div>
   </div>
 
@@ -231,6 +272,16 @@ img{display:block;max-width:100%;}
       <div class="tl-row"><div class="tl-date">2024. 11. 10.</div><div class="tl-text">새가족 양육 개강.</div></div>
       <div class="tl-row"><div class="tl-date">2025. 3. 31.</div><div class="tl-text"><b>진중교회 블로그 개설하다.</b></div></div>
     </div>
+    <div class="eg-label">변화기 사진</div>
+    <div class="era-gallery">
+      <img class="eg-thumb" src="img/hist4-01.jpg" loading="lazy" alt="변화기 사진 1">
+      <img class="eg-thumb" src="img/hist4-02.jpg" loading="lazy" alt="변화기 사진 2">
+      <img class="eg-thumb" src="img/hist4-03.jpg" loading="lazy" alt="변화기 사진 3">
+      <img class="eg-thumb" src="img/hist4-04.jpg" loading="lazy" alt="변화기 사진 4">
+      <img class="eg-thumb" src="img/hist4-05.jpg" loading="lazy" alt="변화기 사진 5">
+      <img class="eg-thumb" src="img/hist4-06.jpg" loading="lazy" alt="변화기 사진 6">
+      <img class="eg-thumb" src="img/hist4-07.jpg" loading="lazy" alt="변화기 사진 7">
+    </div>
   </div>
 
   <a class="back" href="index.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>홈으로 돌아가기</a>
@@ -241,9 +292,20 @@ img{display:block;max-width:100%;}
   © 2026 진중교회 · Since 1964 · (12281) 경기도 남양주시 조안면 운길산로 35 · <a href="tel:031-576-8511">031-576-8511</a>
 </footer>
 
+<div id="lightbox" class="lightbox" hidden>
+  <button class="lb-close" aria-label="닫기">×</button>
+  <button class="lb-nav lb-prev" aria-label="이전">‹</button>
+  <img class="lb-img" src="" alt="사진 크게 보기">
+  <button class="lb-nav lb-next" aria-label="다음">›</button>
+  <div class="lb-count"><span id="lb-cur">1</span> / <span id="lb-total">1</span></div>
+</div>
+
 <script>
 const mb=document.getElementById('menuBtn'), nl=document.getElementById('navLinks');
-mb.addEventListener('click',()=>nl.classList.toggle('open'));
+mb.addEventListener('click',(e)=>{ e.stopPropagation(); nl.classList.toggle('open'); });
+// 메뉴 밖(바탕) 클릭 시 닫기 + 메뉴 안 링크 클릭 시 닫기
+document.addEventListener('click',(e)=>{ if(nl.classList.contains('open') && !nl.contains(e.target) && !mb.contains(e.target)) nl.classList.remove('open'); });
+nl.querySelectorAll('a').forEach((a)=>a.addEventListener('click',()=>nl.classList.remove('open')));
 const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.08});
 document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 /* 창립(1964.9.27) 기준 주년 자동 계산 — 매년 창립일이 지나면 +1 */
@@ -252,6 +314,30 @@ document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
   if(n < new Date(n.getFullYear(),8,27)) y--;   // 9월 27일 이전이면 아직 올해 주년 전
   var el=document.getElementById('anniv');
   if(el && el.firstChild) el.firstChild.nodeValue=y;
+})();
+/* 사진 갤러리 라이트박스 */
+(function(){
+  var lb=document.getElementById('lightbox'); if(!lb) return;
+  var img=lb.querySelector('.lb-img'),
+      cur=document.getElementById('lb-cur'), tot=document.getElementById('lb-total');
+  var list=[], idx=0;
+  function show(i){ idx=(i+list.length)%list.length; img.src=list[idx]; cur.textContent=idx+1; }
+  function open(imgs,start){ list=imgs; tot.textContent=list.length; show(start); lb.hidden=false; document.body.style.overflow='hidden'; }
+  function close(){ lb.hidden=true; img.src=''; document.body.style.overflow=''; }
+  document.addEventListener('click',function(e){
+    var t=e.target;
+    if(t.classList.contains('eg-thumb')){
+      var gal=t.closest('.era-gallery'); if(!gal) return;
+      var thumbs=[].slice.call(gal.querySelectorAll('.eg-thumb'));
+      open(thumbs.map(function(n){return n.getAttribute('data-full')||n.src;}), thumbs.indexOf(t));
+    } else if(t===lb || t.classList.contains('lb-close')){ close(); }
+    else if(t.classList.contains('lb-prev')){ show(idx-1); }
+    else if(t.classList.contains('lb-next')){ show(idx+1); }
+  });
+  document.addEventListener('keydown',function(e){ if(lb.hidden) return; if(e.key==='Escape') close(); else if(e.key==='ArrowLeft') show(idx-1); else if(e.key==='ArrowRight') show(idx+1); });
+  var sx=0;
+  lb.addEventListener('touchstart',function(e){ sx=e.changedTouches[0].clientX; },{passive:true});
+  lb.addEventListener('touchend',function(e){ var dx=e.changedTouches[0].clientX-sx; if(Math.abs(dx)>40) show(idx+(dx<0?1:-1)); },{passive:true});
 })();
 </script>
 </body>

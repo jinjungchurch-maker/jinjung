@@ -239,7 +239,10 @@ img{display:block;max-width:100%;}
 
 <script>
 const mb=document.getElementById('menuBtn'), nl=document.getElementById('navLinks');
-mb.addEventListener('click',()=>nl.classList.toggle('open'));
+mb.addEventListener('click',(e)=>{ e.stopPropagation(); nl.classList.toggle('open'); });
+// 메뉴 밖(바탕) 클릭 시 닫기 + 메뉴 안 링크 클릭 시 닫기
+document.addEventListener('click',(e)=>{ if(nl.classList.contains('open') && !nl.contains(e.target) && !mb.contains(e.target)) nl.classList.remove('open'); });
+nl.querySelectorAll('a').forEach((a)=>a.addEventListener('click',()=>nl.classList.remove('open')));
 const io=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.08});
 document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 </script>

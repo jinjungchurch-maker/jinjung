@@ -162,7 +162,10 @@ img{display:block;max-width:100%;}
 
 <script>
 const mb=document.getElementById('menuBtn'), nl=document.getElementById('navLinks');
-mb.addEventListener('click',()=>nl.classList.toggle('open'));
+mb.addEventListener('click',(e)=>{ e.stopPropagation(); nl.classList.toggle('open'); });
+// 메뉴 밖(바탕) 클릭 시 닫기 + 메뉴 안 링크 클릭 시 닫기
+document.addEventListener('click',(e)=>{ if(nl.classList.contains('open') && !nl.contains(e.target) && !mb.contains(e.target)) nl.classList.remove('open'); });
+nl.querySelectorAll('a').forEach((a)=>a.addEventListener('click',()=>nl.classList.remove('open')));
 
 const CATS=["설교","찬양","구역모임","가정예배","주보"];
 const params=new URLSearchParams(location.search);
@@ -219,8 +222,15 @@ function fitFrame(f){
       var st=d.createElement('style'); st.id='board-fit';
       st.textContent=
         'html,body{background:#fff !important;margin:0 !important;padding:0 !important;}'+
-        '.sheet{max-width:none !important;margin:0 !important;box-shadow:none !important;border:none !important;border-radius:0 !important;}'+
-        '.dlbar{max-width:none !important;margin:0 0 10px !important;padding:0 clamp(16px,4.5vw,46px) !important;}';
+        '.sheet{max-width:none !important;margin:0 !important;box-shadow:none !important;border:none !important;}'+
+        '.dlbar{max-width:none !important;margin:0 0 10px !important;padding:0 clamp(16px,4.5vw,46px) !important;}'+
+        /* 본문 글자 크기 키워 게시판(구역모임) 글과 맞춤. 지시어(.note 기울임)는 그대로 유지 */
+        '.sec p,.scripture,.summary p,.card p,.prayer,.mission p,.dcard .q,.lyrics .t,.bless{font-size:18px !important;line-height:1.72 !important;}'+
+        '.summary .lead{font-size:19px !important;}'+
+        '.passage-ref{font-size:18px !important;}'+
+        '.head{border-radius:18px !important;}'+
+        /* 지시어(.note)는 작게 + 기울임 유지 (본문 키움 규칙에 안 휩쓸리게 높은 우선순위) */
+        '.sheet p.note{font-size:13px !important;font-style:italic !important;line-height:1.55 !important;}';
       (d.head||d.documentElement).appendChild(st);
     }
     function setH(){ try{ f.style.height=(d.body.scrollHeight+8)+'px'; }catch(e){} }
