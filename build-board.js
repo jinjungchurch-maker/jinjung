@@ -78,10 +78,11 @@ async function buildYoutube() {
     .map((e) => {
       const id = (e.match(/<yt:videoId>([^<]+)<\/yt:videoId>/) || [])[1] || "";
       const title = decodeEntities((e.match(/<title>([^<]+)<\/title>/) || [])[1] || "");
-      return id ? { id, title } : null;
+      const date = ((e.match(/<published>([^<]+)<\/published>/) || [])[1] || "").slice(0, 10);
+      return id ? { id, title, date } : null;
     })
     .filter(Boolean)
-    .slice(0, 6);
+    .slice(0, 15);   // 유튜브 RSS 피드 최대치(최신 15개) — 게시판 설교/찬양 자동목록에 사용
   fs.writeFileSync(
     "youtube-data.json",
     JSON.stringify({ channelId: YT_CHANNEL, updated: new Date().toISOString(), videos }, null, 2)
@@ -92,25 +93,27 @@ async function buildYoutube() {
 // 같은 빌드 내 파일명 중복 추적 (다른 파일이 같은 이름일 때만 번호 추가)
 const usedFiles = new Map();
 
-// 파일을 다운로드하여 files/ 폴더에 저장, 사이트 내 경로 반환
+// 파일을 다운로드하여 files/ 폴더에 저장.
+// 파일을 다운로드하여 files/ 폴더에 저장, 사이트 내 경로(문자열) 반환.
+// 핵심 수정: 맥/노션에서 온 한글 파일명이 자모분리형(NFD)이면 한글이 '_'로 깨졌다.
+//   → NFC로 정규화해 6/7 파일처럼 한글을 보존하고, 가정예배지 HTML 안의
+//     PDF 상대링크(NFC)와 저장 PDF 파일명이 정확히 일치하게 한다(404 방지).
 async function downloadFile(srcUrl, origName) {
   if (!fs.existsSync("files")) fs.mkdirSync("files");
-  // 안전한 파일명 만들기 (한글/공백 → 정리, 확장자 보존)
+  origName = (origName || "file").normalize("NFC");
+  // 확장자 추출 (origName 우선, 없으면 URL에서)
   let ext = "";
   const m = origName.match(/\.[a-zA-Z0-9]{1,8}$/);
-  if (m) ext = m[0];
+  if (m) ext = m[0].toLowerCase();
   else {
     const um = srcUrl.split("?")[0].match(/\.[a-zA-Z0-9]{1,8}$/);
-    if (um) ext = um[0];
+    if (um) ext = um[0].toLowerCase();
   }
-  // 원래 파일명을 그대로 유지 (공백 → _, 위험 문자만 제거, 한글 보존)
-  const base = origName
-    .replace(/\.[a-zA-Z0-9]{1,8}$/, "")
-    .replace(/\s+/g, "_")
-    .replace(/[^\w가-힣._-]/g, "");
+  // 저장 파일명은 한글 그대로 유지 (공백→_, URL 위험문자만 제거)
+  const nameNoExt = origName.replace(/\.[a-zA-Z0-9]{1,8}$/, "");
+  const base = (nameNoExt.replace(/\s+/g, "_").replace(/[^\w가-힣._-]/g, "")) || "file";
   let fname = `${base}${ext}`;
   let dest = `files/${fname}`;
-  // 이름은 같은데 실제로 다른 파일이면 _2, _3 … 으로만 구분
   let n = 2;
   while (usedFiles.has(dest) && usedFiles.get(dest) !== srcUrl) {
     fname = `${base}_${n}${ext}`;
@@ -119,10 +122,14 @@ async function downloadFile(srcUrl, origName) {
   }
   usedFiles.set(dest, srcUrl);
   if (fs.existsSync(dest)) return dest;
-
   const res = await fetch(srcUrl);
   if (!res.ok) return "";
-  const buf = Buffer.from(await res.arrayBuffer());
+  let buf = Buffer.from(await res.arrayBuffer());
+  // HTML(가정예배지)은 내부 PDF 버튼이 한글 '상대링크'다. 본문도 NFC로 통일해
+  // 저장되는 PDF 파일명과 글자 형태를 일치시킨다. (이진 파일은 변형하지 않음)
+  if (ext === ".html" || ext === ".htm") {
+    buf = Buffer.from(buf.toString("utf8").normalize("NFC"), "utf8");
+  }
   fs.writeFileSync(dest, buf);
   console.log(`  ↓ 첨부 저장: ${dest} (${Math.round(buf.length / 1024)}KB)`);
   return dest;

@@ -330,8 +330,36 @@ function render(posts){
   appendBatch();   // 최초 3개만 표시 (스크롤하면 3개씩 더)
 }
 
-// board-data.json 읽기 (노션 빌드가 생성). 캐시 무력화로 항상 최신본을 받음.
-fetch('board-data.json?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.json():Promise.reject()).then(data=>render(data)).catch(()=>render([]));
+// 유튜브 영상 → 게시판 글로 자동 변환 (설교/찬양). 노션 입력 없이 자동 목록화.
+//  - 제목에 '목사/설교/주일예배/말씀' → 설교, '찬양대/특송/찬양' → 찬양 (그 외 영상은 제외)
+//  - 노션에 이미 같은 영상을 올린 경우엔 중복 방지(노션 글 우선)
+function ytPosts(ytData, notionPosts){
+  const vids=(ytData && ytData.videos)||[];
+  const taken={};
+  (notionPosts||[]).forEach(function(p){ const id=findYt(p); if(id) taken[id]=1; });
+  const isSermon=function(t){ return /목사|설교|주일\s*예배|말씀/.test(t||''); };
+  const isPraise=function(t){ return /찬양대|특송|찬양/.test(t||''); };
+  const out=[];
+  vids.forEach(function(v){
+    if(!v.id || taken[v.id]) return;
+    let cat=null;
+    if(isSermon(v.title)) cat='설교';
+    else if(isPraise(v.title)) cat='찬양';
+    else return;
+    out.push({ category:cat, title:v.title, date:v.date||'',
+               url:'https://www.youtube.com/watch?v='+v.id, content:'', attachments:[], _auto:true });
+  });
+  return out;
+}
+
+// 노션 게시판(board-data.json) + 유튜브 자동목록(youtube-data.json)을 함께 읽어 렌더.
+Promise.all([
+  fetch('board-data.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():[];}).catch(function(){return [];}),
+  fetch('youtube-data.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})
+]).then(function(res){
+  const notion = Array.isArray(res[0]) ? res[0] : ((res[0]&&res[0].posts)||[]);
+  render(notion.concat(ytPosts(res[1], notion)));
+});
 </script>
 </body>
 </html>

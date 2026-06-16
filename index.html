@@ -406,15 +406,32 @@ const CHANNEL_ID="UCCxbiZWKg0XgU8oAMEiSwUQ";
     document.getElementById(boxId).innerHTML=
       '<iframe src="https://www.youtube-nocookie.com/embed/'+vid+'?rel=0&origin='+o+'" title="'+(title||'').replace(/"/g,'')+'" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
   }
+  /* 제목 키워드로만 구분 — '목사'(또는 설교·주일예배·말씀)→설교, '찬양대'(또는 특송·찬양)→찬양.
+     키워드가 없는 영상은 설교/찬양과 무관하므로 어느 칸에도 넣지 않는다. */
+  function classify(items){
+    var sermon=null, praise=null, i;
+    for(i=0;i<items.length;i++){ if(/목사/.test(items[i].title||"")){sermon=items[i];break;} }
+    if(!sermon){ for(i=0;i<items.length;i++){ if(/설교|주일\s*예배|말씀/.test(items[i].title||"")){sermon=items[i];break;} } }
+    for(i=0;i<items.length;i++){ if(items[i]!==sermon && /찬양대|특송|찬양/.test(items[i].title||"")){praise=items[i];break;} }
+    return {s:sermon,p:praise};   // 매칭 없으면 null
+  }
   function apply(items){
     if(!items||!items.length)return;
-    var s=items[0], p=items[1]||items[0];
-    embed("sermon-box",s.id,s.title);
-    document.getElementById("sermon-title").textContent=s.title||"진중교회 설교";
-    embed("praise-box",p.id,p.title);
-    document.getElementById("praise-title").textContent=p.title||"진중교회 찬양";
-    var hs=document.getElementById('hero-sermon');
-    if(hs&&s.title) hs.textContent="이번 주 설교 · "+s.title;
+    var c=classify(items), s=c.s, p=c.p;
+    if(s){
+      embed("sermon-box",s.id,s.title);
+      document.getElementById("sermon-title").textContent=s.title||"진중교회 설교";
+      var hs=document.getElementById('hero-sermon');
+      if(hs&&s.title) hs.textContent="이번 주 설교 · "+s.title;
+    } else { noVideo("sermon-box"); }
+    if(p){
+      embed("praise-box",p.id,p.title);
+      document.getElementById("praise-title").textContent=p.title||"진중교회 찬양";
+    } else { noVideo("praise-box"); }
+  }
+  function noVideo(boxId){
+    var el=document.getElementById(boxId);
+    if(el) el.innerHTML='<div class="video-fallback">이번 주 영상이 아직 없습니다<br><a href="https://www.youtube.com/channel/'+CHANNEL_ID+'/videos" target="_blank" rel="noopener">유튜브에서 보기 →</a></div>';
   }
   /* ① 빌드 때 저장된 최신본 먼저 (확실히 보임) */
   fetch('youtube-data.json',{cache:'no-store'}).then(r=>r.ok?r.json():Promise.reject()).then(d=>apply(d&&d.videos)).catch(()=>{});
