@@ -7,6 +7,10 @@
   # 사이트 파일이 있는 폴더 (현재 폴더)
   publish = "."
 
+# 서버리스 함수 폴더 (유튜브 RSS를 서버에서 직접 가져오는 함수)
+[functions]
+  directory = "netlify/functions"
+
 # 환경변수 NOTION_TOKEN, NOTION_DATABASE_ID 는
 # Netlify 사이트 설정 → Environment variables 에서 직접 입력합니다.
 # (코드/파일에 토큰을 적지 않습니다.)

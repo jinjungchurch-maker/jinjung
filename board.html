@@ -40,6 +40,8 @@ img{display:block;max-width:100%;}
 @media(max-width:980px){
   .nav-links{position:fixed;inset:0 0 0 auto;width:78%;max-width:340px;background:#fff;flex-direction:column;align-items:stretch;padding:84px 20px 30px;gap:2px;transform:translateX(100%);transition:.35s;box-shadow:-20px 0 60px -30px rgba(0,0,0,.5);overflow-y:auto;}
   .nav-links.open{transform:none;}
+  .nav{-webkit-backdrop-filter:none;backdrop-filter:none;background:#fff;}  /* 모바일: 블러 제거 — 고정 메뉴서랍 위치 깨짐 방지 */
+  .nav-links{z-index:200;}
   .nav-links a{font-size:16px;padding:13px 16px;}
   .nav-links > a,.dropdown > .dbtn{font-size:16px;padding:13px 16px;width:100%;text-align:left;}
   .dropdown .menu{position:static;opacity:1;visibility:visible;transform:none;box-shadow:none;border:none;padding:0 0 6px 14px;margin:0;min-width:0;}
@@ -352,14 +354,55 @@ function ytPosts(ytData, notionPosts){
   return out;
 }
 
-// 노션 게시판(board-data.json) + 유튜브 자동목록(youtube-data.json)을 함께 읽어 렌더.
+// 노션 게시판(board-data.json) + 유튜브 자동목록을 함께 렌더.
+// 유튜브는 ①빌드 저장본(youtube-data.json) 먼저, ②브라우저에서 실시간 수집으로 보강
+// (메인 페이지와 동일 방식 — 빌드 시 수집이 비어도 게시판이 채워진다).
+let NOTION_POSTS = [];
+let YT_VIDS = [];
+function rerender(){ render(NOTION_POSTS.concat(ytPosts({videos:YT_VIDS}, NOTION_POSTS))); }
+
 Promise.all([
   fetch('board-data.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():[];}).catch(function(){return [];}),
   fetch('youtube-data.json?t='+Date.now(),{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).catch(function(){return null;})
 ]).then(function(res){
-  const notion = Array.isArray(res[0]) ? res[0] : ((res[0]&&res[0].posts)||[]);
-  render(notion.concat(ytPosts(res[1], notion)));
+  NOTION_POSTS = Array.isArray(res[0]) ? res[0] : ((res[0]&&res[0].posts)||[]);
+  YT_VIDS = (res[1] && res[1].videos) || [];
+  rerender();
 });
+
+// 유튜브 실시간 수집 (메인과 동일한 프록시). 성공하면 더 최신 목록으로 교체.
+(function(){
+  const CH="UCCxbiZWKg0XgU8oAMEiSwUQ";
+  const feed="https://www.youtube.com/feeds/videos.xml?channel_id="+CH;
+  const proxies=[
+    function(u){return "https://api.codetabs.com/v1/proxy/?quest="+encodeURIComponent(u);},
+    function(u){return "https://api.allorigins.win/raw?url="+encodeURIComponent(u);},
+    function(u){return "https://corsproxy.io/?url="+encodeURIComponent(u);},
+    function(u){return "https://thingproxy.freeboard.io/fetch/"+u;}
+  ];
+  function tryP(i){
+    if(i>=proxies.length)return;
+    fetch(proxies[i](feed)).then(function(r){return r.ok?r.text():Promise.reject();}).then(function(xml){
+      const doc=new DOMParser().parseFromString(xml,"text/xml");
+      const es=[].slice.call(doc.querySelectorAll("entry"));
+      if(!es.length)return tryP(i+1);
+      const vids=es.map(function(e){
+        return {
+          id:(e.querySelector("videoId")||{}).textContent||"",
+          title:(e.querySelector("title")||{}).textContent||"영상",
+          date:((e.querySelector("published")||{}).textContent||"").slice(0,10)
+        };
+      }).filter(function(x){return x.id;});
+      if(!vids.length)return tryP(i+1);
+      YT_VIDS=vids; rerender();
+    }).catch(function(){ tryP(i+1); });
+  }
+  // 서버리스 함수 1순위(서버에서 직접 RSS 수집), 실패/빈값이면 공개 프록시로 폴백
+  fetch('/.netlify/functions/youtube',{cache:'no-store'})
+    .then(function(r){return r.ok?r.json():Promise.reject();})
+    .then(function(d){ if(d&&d.videos&&d.videos.length){ YT_VIDS=d.videos; rerender(); } else tryP(0); })
+    .catch(function(){ tryP(0); });
+})();
 </script>
 </body>
 </html>

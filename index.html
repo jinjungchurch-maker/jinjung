@@ -352,7 +352,7 @@ section{position:relative;}
       </div>
     </div>
     <div class="card reveal" style="padding:0;overflow:hidden;">
-      <iframe class="mapbox" title="진중교회 지도" loading="lazy" src="https://maps.google.com/maps?q=남양주시%20조안면%20운길산로%2035&output=embed"></iframe>
+      <iframe class="mapbox" title="진중교회 지도" loading="lazy" src="https://maps.google.com/maps?q=남양주시%20조안면%20운길산로%2035&hl=ko&output=embed"></iframe>
     </div>
   </div>
 </div></section>
@@ -406,14 +406,16 @@ const CHANNEL_ID="UCCxbiZWKg0XgU8oAMEiSwUQ";
     document.getElementById(boxId).innerHTML=
       '<iframe src="https://www.youtube-nocookie.com/embed/'+vid+'?rel=0&origin='+o+'" title="'+(title||'').replace(/"/g,'')+'" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
   }
-  /* 제목 키워드로만 구분 — '목사'(또는 설교·주일예배·말씀)→설교, '찬양대'(또는 특송·찬양)→찬양.
-     키워드가 없는 영상은 설교/찬양과 무관하므로 어느 칸에도 넣지 않는다. */
+  /* 제목 키워드 우선 — '목사'(또는 설교·주일예배·말씀)→설교, '찬양대'(또는 특송·찬양)→찬양.
+     키워드를 못 찾으면 최신 영상으로 대체(메인은 항상 보이도록). */
   function classify(items){
     var sermon=null, praise=null, i;
     for(i=0;i<items.length;i++){ if(/목사/.test(items[i].title||"")){sermon=items[i];break;} }
     if(!sermon){ for(i=0;i<items.length;i++){ if(/설교|주일\s*예배|말씀/.test(items[i].title||"")){sermon=items[i];break;} } }
     for(i=0;i<items.length;i++){ if(items[i]!==sermon && /찬양대|특송|찬양/.test(items[i].title||"")){praise=items[i];break;} }
-    return {s:sermon,p:praise};   // 매칭 없으면 null
+    if(!sermon) sermon=items[0]||null;                                  // 폴백: 최신 영상
+    if(!praise){ for(i=0;i<items.length;i++){ if(items[i]!==sermon){praise=items[i];break;} } }  // 폴백: 그다음 영상
+    return {s:sermon,p:praise};
   }
   function apply(items){
     if(!items||!items.length)return;
@@ -435,7 +437,7 @@ const CHANNEL_ID="UCCxbiZWKg0XgU8oAMEiSwUQ";
   }
   /* ① 빌드 때 저장된 최신본 먼저 (확실히 보임) */
   fetch('youtube-data.json',{cache:'no-store'}).then(r=>r.ok?r.json():Promise.reject()).then(d=>apply(d&&d.videos)).catch(()=>{});
-  /* ② 가능하면 실시간으로 더 최신 영상으로 교체 */
+  /* ② 서버리스 함수로 실시간 최신화 (서버에서 직접 RSS 수집 — 공개 프록시 불안정 해결) */
   function tryP(i){
     if(i>=proxies.length)return;
     fetch(proxies[i](feed)).then(r=>r.ok?r.text():Promise.reject()).then(xml=>{
@@ -447,7 +449,10 @@ const CHANNEL_ID="UCCxbiZWKg0XgU8oAMEiSwUQ";
       apply(items);
     }).catch(()=>tryP(i+1));
   }
-  tryP(0);
+  fetch('/.netlify/functions/youtube',{cache:'no-store'})
+    .then(r=>r.ok?r.json():Promise.reject())
+    .then(d=>{ if(d&&d.videos&&d.videos.length) apply(d.videos); else tryP(0); })  /* 함수 실패/빈값이면 공개 프록시로 폴백 */
+    .catch(()=>tryP(0));
 })();
 </script>
 </body>
