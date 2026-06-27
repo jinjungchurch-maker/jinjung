@@ -256,7 +256,7 @@ function preview(u){
   const yi=ytId(u); if(yi) return ytEmbed(yi);
   if(['jpg','jpeg','png','gif','webp','svg'].includes(ext)) return '<div class="preview"><img src="'+u+'" alt="" loading="lazy"></div>';
   if(ext==='pdf') return '<div class="preview"><iframe src="'+u+'#view=FitH" title="첨부 미리보기"></iframe></div>';
-  if(ext==='html'||ext==='htm') return '<div class="preview-html"><iframe class="hframe" src="'+u+'" title="가정예배지" onload="fitFrame(this)" sandbox="allow-scripts allow-same-origin allow-popups allow-modals allow-downloads"></iframe></div>';
+  if(ext==='html'||ext==='htm') return '<div class="preview-html"><iframe class="hframe" src="'+u+'" title="가정예배지" onload="fitFrame(this)" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-modals allow-downloads"></iframe></div>';
   return '';
 }
 
