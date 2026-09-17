@@ -251,6 +251,8 @@ function fitFrame(f){
     }
     function setH(){ try{ f.style.height=(d.body.scrollHeight+8)+'px'; }catch(e){} }
     setH(); setTimeout(setH,120); setTimeout(setH,900);   // 폰트 로딩 후 보정
+    // 안에서 탭을 바꿔 내용 길이가 달라지면(QT자료 요일·대상 탭 등) 칸 높이를 따라 맞춘다
+    try{ if(!f._ro){ f._ro=new f.contentWindow.ResizeObserver(setH); f._ro.observe(d.body); d.addEventListener('click',function(){ setTimeout(setH,60); setTimeout(setH,400); }); } }catch(e){}
   }catch(e){ f.style.height='85vh'; }
 }
 window.addEventListener('resize',function(){ document.querySelectorAll('.hframe').forEach(fitFrame); });
