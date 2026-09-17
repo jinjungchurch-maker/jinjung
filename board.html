@@ -289,7 +289,12 @@ function fitFrame(f){
         '.sheet p.note{font-size:13px !important;font-style:italic !important;line-height:1.55 !important;}';
       (d.head||d.documentElement).appendChild(st);
     }
-    function setH(){ try{ f.style.height=(d.body.scrollHeight+8)+'px'; }catch(e){} }
+    // 칸 높이 = 실제 내용물의 끝 위치. body.scrollHeight는 페이지 바탕이 창 높이를 따라 늘어나는 경우(가정예배지)
+    // 칸을 키우면 다시 커져 끝없이 늘어나므로 쓰지 않는다. 차이가 4px 이하면 바꾸지 않아 되먹임을 막는다.
+    function contentH(){ var w=d.defaultView, y=w.scrollY||0, m=0, els=d.body.querySelectorAll('*');
+      for(var i=0;i<els.length;i++){ var r=els[i].getBoundingClientRect(); if(r.height>0 && r.bottom+y>m) m=r.bottom+y; }
+      var cs=w.getComputedStyle(d.body); return Math.ceil(m+(parseFloat(cs.paddingBottom)||0)+(parseFloat(cs.marginBottom)||0)); }
+    function setH(){ try{ var h=contentH()+8; if(Math.abs((parseFloat(f.style.height)||0)-h)>4) f.style.height=h+'px'; }catch(e){} }
     setH(); setTimeout(setH,120); setTimeout(setH,900);   // 폰트 로딩 후 보정
     // 안에서 탭을 바꿔 내용 길이가 달라지면(QT자료 요일·대상 탭 등) 칸 높이를 따라 맞춘다
     try{ if(!f._ro){ f._ro=new f.contentWindow.ResizeObserver(setH); f._ro.observe(d.body); d.addEventListener('click',function(){ setTimeout(setH,60); setTimeout(setH,400); }); } }catch(e){}
