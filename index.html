@@ -94,8 +94,9 @@ section{position:relative;}
 /* 소그룹 · 가정예배 두 배너 */
 .dual{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-d) 100%);color:#fff;position:relative;overflow:hidden;}
 .dual::before{content:"";position:absolute;inset:0;opacity:.5;pointer-events:none;background:radial-gradient(closest-side,rgba(47,143,214,.4),transparent) -10% -30%/620px 620px no-repeat,radial-gradient(closest-side,rgba(224,169,60,.22),transparent) 110% 130%/520px 520px no-repeat;}
-.dual-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;position:relative;}
-@media(max-width:900px){.dual-grid{grid-template-columns:1fr;}}
+.dual-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;position:relative;}
+@media(max-width:1100px){.dual-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:640px){.dual-grid{grid-template-columns:1fr;}}
 .dual-card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:var(--r);padding:clamp(26px,4vw,40px);backdrop-filter:blur(8px);transition:.25s;}
 .dual-card:hover{transform:translateY(-4px);background:rgba(255,255,255,.12);}
 .dual-card .ic{width:54px;height:54px;border-radius:15px;display:grid;place-items:center;margin-bottom:18px;}
@@ -103,6 +104,7 @@ section{position:relative;}
 .dual-card.sg .ic{background:linear-gradient(135deg,var(--green),#0f7a47);}
 .dual-card.fw .ic{background:linear-gradient(135deg,var(--gold),#b9831f);}
 .dual-card.qt .ic{background:linear-gradient(135deg,#2f8fd6,#1d5f9e);}
+.dual-card.jb .ic{background:linear-gradient(135deg,var(--red),#a81b21);}
 .dual-card .lbl{font-size:13px;font-weight:700;letter-spacing:.08em;opacity:.8;}
 .dual-card h3{font-size:clamp(22px,4vw,30px);font-weight:800;margin:4px 0 8px;}
 .dual-card p{opacity:.86;font-size:15px;margin-bottom:20px;}
@@ -246,9 +248,16 @@ section{position:relative;}
   <div class="scroll-ind"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg></div>
 </header>
 
-<!-- 소그룹 · 가정예배 · QT자료 -->
+<!-- 온라인주보 · 소그룹 · 가정예배 · QT자료 -->
 <section class="dual">
   <div class="wrap dual-grid">
+    <div class="dual-card jb reveal">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M9 7h6M9 11h6M9 15h4"/></svg></div>
+      <p class="lbl">ONLINE BULLETIN</p>
+      <h3>온라인주보</h3>
+      <p>이번 주 예배 순서와 말씀, 교회 소식을 휴대폰으로 바로 봅니다. 찬송 가사·악보도 함께 들어 있습니다.</p>
+      <a class="go" href="jubo/latest.html">온라인주보 보기 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    </div>
     <div class="dual-card sg reveal">
       <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
       <p class="lbl">SMALL GROUP</p>
