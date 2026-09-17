@@ -276,6 +276,7 @@ function fitFrame(f){
       var st=d.createElement('style'); st.id='board-fit';
       st.textContent=
         'html,body{background:#fff !important;margin:0 !important;padding:0 !important;}'+
+        ':root{--bg:#fff !important;}'+   /* QT자료 탭 줄 뒤의 옅은 노란 바탕을 게시판 흰 바탕과 맞춤 */
         '.sheet{max-width:none !important;margin:0 !important;box-shadow:none !important;border:none !important;}'+
         '.wrap{padding-left:0 !important;padding-right:0 !important;}'+   /* 본문을 파란박스와 같은 가로폭으로 (좌우 여백 제거) */
         '.dlbar{max-width:none !important;margin:0 0 10px !important;padding:0 clamp(16px,4.5vw,46px) !important;}'+
