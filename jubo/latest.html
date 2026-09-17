@@ -6,10 +6,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@600;700&display=swap">
 <style>
-  :root{--bg:#f7f5f0;--paper:#fff;--ink:#1f2a2b;--muted:#6b756f;--line:#e3ded3;--soft:#f0ece4;--accent:#2f6b6f;--accent-soft:#e3eeee;--warn:#b5451b;--warn-soft:#fbe9e0;--lyr-bg:#e3eeee;--lyr-ink:#2f6b6f;--lyr-line:#c3dada;--scr-bg:#f6ecdc;--scr-ink:#8a5a1c;--scr-line:#e6d2b0;--fs:16px;
+  :root{--bg:#f7f5f0;--paper:#fff;--ink:#1f2a2b;--muted:#6b756f;--line:#e3ded3;--soft:#f0ece4;--accent:#2f6b6f;--accent-soft:#e3eeee;--warn:#b5451b;--warn-soft:#fbe9e0;--lyr-bg:#e3eeee;--lyr-ink:#2f6b6f;--lyr-line:#c3dada;--scr-bg:#f6ecdc;--scr-ink:#8a5a1c;--scr-line:#e6d2b0;--rd-bg:#ece8f4;--rd-ink:#5b4a86;--rd-line:#d6cfe6;--fs:16px;
     --sans:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;--serif:'Noto Serif KR','Apple Myungjo',serif}
-  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#15191a;--paper:#1d2324;--ink:#ece7dc;--muted:#9aa5a3;--line:#2f3739;--soft:#242c2d;--accent:#7fc2c5;--accent-soft:#1f2f30;--warn:#f0a074;--warn-soft:#362820;--lyr-bg:#1f3031;--lyr-ink:#8fcdd0;--lyr-line:#2f4a4b;--scr-bg:#33291c;--scr-ink:#e2b879;--scr-line:#4d3d27}}
-  :root[data-theme="dark"]{--bg:#15191a;--paper:#1d2324;--ink:#ece7dc;--muted:#9aa5a3;--line:#2f3739;--soft:#242c2d;--accent:#7fc2c5;--accent-soft:#1f2f30;--warn:#f0a074;--warn-soft:#362820;--lyr-bg:#1f3031;--lyr-ink:#8fcdd0;--lyr-line:#2f4a4b;--scr-bg:#33291c;--scr-ink:#e2b879;--scr-line:#4d3d27}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#15191a;--paper:#1d2324;--ink:#ece7dc;--muted:#9aa5a3;--line:#2f3739;--soft:#242c2d;--accent:#7fc2c5;--accent-soft:#1f2f30;--warn:#f0a074;--warn-soft:#362820;--lyr-bg:#1f3031;--lyr-ink:#8fcdd0;--lyr-line:#2f4a4b;--scr-bg:#33291c;--scr-ink:#e2b879;--scr-line:#4d3d27;--rd-bg:#2a2536;--rd-ink:#c3b4ea;--rd-line:#3f3752}}
+  :root[data-theme="dark"]{--bg:#15191a;--paper:#1d2324;--ink:#ece7dc;--muted:#9aa5a3;--line:#2f3739;--soft:#242c2d;--accent:#7fc2c5;--accent-soft:#1f2f30;--warn:#f0a074;--warn-soft:#362820;--lyr-bg:#1f3031;--lyr-ink:#8fcdd0;--lyr-line:#2f4a4b;--scr-bg:#33291c;--scr-ink:#e2b879;--scr-line:#4d3d27;--rd-bg:#2a2536;--rd-ink:#c3b4ea;--rd-line:#3f3752}
   html,body{background:var(--bg);color:var(--ink)} body{margin:0;font-family:var(--sans);font-size:var(--fs);line-height:1.7;-webkit-font-smoothing:antialiased}
   body.big{--fs:19px}
   a{color:var(--accent)} a:hover{color:var(--ink)}
@@ -53,6 +53,8 @@
   .hymn button[data-kind="score"]{background:var(--scr-bg);color:var(--scr-ink);border:1px solid var(--scr-line);font-weight:600}
   .hymn button[data-kind="lyrics"][aria-expanded="true"]{background:var(--lyr-ink);color:var(--paper);border-color:var(--lyr-ink)}
   .hymn button[data-kind="score"][aria-expanded="true"]{background:var(--scr-ink);color:var(--paper);border-color:var(--scr-ink)}
+  button[data-kind="reading"]{background:var(--rd-bg);color:var(--rd-ink);border:1px solid var(--rd-line);border-style:solid;font-weight:600}
+  button[data-kind="reading"][aria-expanded="true"]{background:var(--rd-ink);color:var(--paper);border-color:var(--rd-ink)}
   .hymn-body{grid-column:1 / -1;margin-top:8px;background:var(--soft);border-radius:10px;padding:12px 14px} .hymn-body .scripture{background:transparent;padding:0}
   .hymn-body .verse{white-space:pre-line;font-size:.95em;line-height:1.75;margin:0 0 .7em} .hymn-body .verse:last-child{margin:0}
   .hymn-body .vn{color:var(--accent);font-weight:700;margin-right:6px}
