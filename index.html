@@ -94,14 +94,15 @@ section{position:relative;}
 /* 소그룹 · 가정예배 두 배너 */
 .dual{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-d) 100%);color:#fff;position:relative;overflow:hidden;}
 .dual::before{content:"";position:absolute;inset:0;opacity:.5;pointer-events:none;background:radial-gradient(closest-side,rgba(47,143,214,.4),transparent) -10% -30%/620px 620px no-repeat,radial-gradient(closest-side,rgba(224,169,60,.22),transparent) 110% 130%/520px 520px no-repeat;}
-.dual-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;position:relative;}
-@media(max-width:760px){.dual-grid{grid-template-columns:1fr;}}
+.dual-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;position:relative;}
+@media(max-width:900px){.dual-grid{grid-template-columns:1fr;}}
 .dual-card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:var(--r);padding:clamp(26px,4vw,40px);backdrop-filter:blur(8px);transition:.25s;}
 .dual-card:hover{transform:translateY(-4px);background:rgba(255,255,255,.12);}
 .dual-card .ic{width:54px;height:54px;border-radius:15px;display:grid;place-items:center;margin-bottom:18px;}
 .dual-card .ic svg{width:26px;height:26px;color:#fff;}
 .dual-card.sg .ic{background:linear-gradient(135deg,var(--green),#0f7a47);}
 .dual-card.fw .ic{background:linear-gradient(135deg,var(--gold),#b9831f);}
+.dual-card.qt .ic{background:linear-gradient(135deg,#2f8fd6,#1d5f9e);}
 .dual-card .lbl{font-size:13px;font-weight:700;letter-spacing:.08em;opacity:.8;}
 .dual-card h3{font-size:clamp(22px,4vw,30px);font-weight:800;margin:4px 0 8px;}
 .dual-card p{opacity:.86;font-size:15px;margin-bottom:20px;}
@@ -202,7 +203,14 @@ section{position:relative;}
           <a href="bylaws.html">정관</a>
         </div>
       </div>
-      <a href="board.html?cat=설교">설교</a>
+      <div class="dropdown">
+        <button class="dbtn">설교 ▾</button>
+        <div class="menu">
+          <a href="board.html?cat=설교">설교</a>
+          <a href="jubo/cards/">카드설교</a>
+          <a href="jubo/qt.html">QT자료</a>
+        </div>
+      </div>
       <a href="board.html?cat=찬양">찬양</a>
       <div class="dropdown">
         <button class="dbtn">소그룹 ▾</button>
@@ -211,7 +219,13 @@ section{position:relative;}
           <a href="board.html?cat=가정예배">가정예배</a>
         </div>
       </div>
-      <a href="board.html?cat=주보">주보</a>
+      <div class="dropdown">
+        <button class="dbtn">주보 ▾</button>
+        <div class="menu">
+          <a href="board.html?cat=주보">주보</a>
+          <a href="jubo/latest.html">온라인주보</a>
+        </div>
+      </div>
     </div>
   </div>
 </nav>
@@ -232,7 +246,7 @@ section{position:relative;}
   <div class="scroll-ind"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg></div>
 </header>
 
-<!-- 소그룹 · 가정예배 -->
+<!-- 소그룹 · 가정예배 · QT자료 -->
 <section class="dual">
   <div class="wrap dual-grid">
     <div class="dual-card sg reveal">
@@ -248,6 +262,13 @@ section{position:relative;}
       <h3>가정예배</h3>
       <p>온 가족이 집에서 함께 드리는 예배. 매주 가정예배지를 올려 드립니다.</p>
       <a class="go" href="board.html?cat=가정예배">가정예배지 보기 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+    </div>
+    <div class="dual-card qt reveal">
+      <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg></div>
+      <p class="lbl">DAILY QT</p>
+      <h3>QT자료</h3>
+      <p>주일에 들은 말씀을 주중에 다시 묵상합니다. 월·수·금 QT를 청장년·청소년·어린이 버전으로 올려 드립니다.</p>
+      <a class="go" href="jubo/qt.html">QT자료 보기 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
     </div>
   </div>
 </section>
@@ -372,8 +393,8 @@ section{position:relative;}
     <div class="fcol">
       <b style="color:#fff;">바로가기</b><br>
       <a href="#about">교회소개</a> · <a href="pastor.html">담임목사</a> · <a href="history.html">교회역사</a> · <a href="bylaws.html">정관</a><br>
-      <a href="board.html?cat=설교">설교</a> · <a href="board.html?cat=찬양">찬양</a><br>
-      <a href="board.html?cat=구역모임">구역모임</a> · <a href="board.html?cat=가정예배">가정예배</a> · <a href="board.html?cat=주보">주보</a>
+      <a href="board.html?cat=설교">설교</a> · <a href="jubo/cards/">카드설교</a> · <a href="jubo/qt.html">QT자료</a> · <a href="board.html?cat=찬양">찬양</a><br>
+      <a href="board.html?cat=구역모임">구역모임</a> · <a href="board.html?cat=가정예배">가정예배</a> · <a href="board.html?cat=주보">주보</a> · <a href="jubo/latest.html">온라인주보</a>
     </div>
   </div>
   <div class="copy">© 2026 진중교회 · Since 1964. All rights reserved.</div>
