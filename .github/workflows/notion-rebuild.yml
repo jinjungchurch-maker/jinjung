@@ -1,9 +1,10 @@
 name: 노션 자동 반영
 
+# 노션 게시판에 글을 올린 직후 홈페이지를 다시 빌드한다 (build-board.js가 노션을 읽는다).
+# 정해진 시각 자동 실행은 쓰지 않는다(2026-09-17 결정) — notion_upload.py --rebuild 가 진중교회 계정으로 이 워크플로를 실행한다.
+# 저장소 Actions 탭의 "Run workflow" 버튼으로 손으로 실행해도 된다.
 on:
-  schedule:
-    - cron: '0 21,3,9 * * *'   # 한국시간 오전 6시·정오·오후 6시 (UTC 기준)
-  workflow_dispatch:            # 수동 실행 버튼도 생김
+  workflow_dispatch:
 
 jobs:
   rebuild:
