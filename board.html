@@ -69,6 +69,20 @@ img{display:block;max-width:100%;}
 .post-head .cat{display:inline-block;font-size:11.5px;font-weight:700;color:var(--sky);background:#eaf4fc;padding:2px 9px;border-radius:20px;margin-bottom:6px;}
 .post-head .t{font-size:20px;font-weight:700;color:var(--ink);}
 .post-head .meta{font-size:14.5px;color:var(--soft);margin-top:4px;}
+/* 카드설교: 3열 목록 + 누르면 화면 전체로 크게 */
+.cgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:16px;}
+.cgrid button{position:relative;display:block;padding:0;border:0;border-radius:8px;overflow:hidden;aspect-ratio:9/16;background:#0d1117;cursor:zoom-in;}
+.cgrid img{width:100%;height:100%;object-fit:cover;display:block;}
+.cgrid span{position:absolute;left:5px;top:5px;background:rgba(0,0,0,.55);color:#fff;font-size:11px;font-weight:700;padding:1px 7px;border-radius:10px;}
+.cnote{font-size:13px;color:#6b7280;margin-top:8px;}
+.post-text.small{font-size:13px;line-height:1.7;color:#6b7280;}
+.cview{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.94);display:none;align-items:center;justify-content:center;touch-action:pan-y;}
+.cview.open{display:flex;}
+.cview img{max-width:100vw;max-height:100svh;object-fit:contain;display:block;}
+.cview .cv-btn{position:absolute;border:0;background:rgba(255,255,255,.14);color:#fff;border-radius:50%;width:46px;height:46px;font-size:28px;line-height:1;display:grid;place-items:center;cursor:pointer;}
+.cview .cv-prev{left:10px;top:50%;transform:translateY(-50%);} .cview .cv-next{right:10px;top:50%;transform:translateY(-50%);}
+.cview .cv-close{right:12px;top:max(12px,env(safe-area-inset-top));font-size:24px;}
+.cview .cv-count{position:absolute;bottom:max(16px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);color:#fff;background:rgba(0,0,0,.5);font-size:13px;font-weight:700;padding:4px 13px;border-radius:20px;}
 .post-text{margin-top:16px;padding-top:16px;border-top:1px dashed var(--line);font-size:18.5px;color:var(--ink2);line-height:1.9;white-space:normal;}
 .post-files{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;}
 .filelink{display:inline-flex;align-items:center;gap:7px;font-size:13.5px;font-weight:600;color:var(--navy);background:#eef4fb;padding:8px 14px;border-radius:10px;transition:.18s;}
@@ -228,6 +242,29 @@ let _galX=0;
 document.addEventListener('touchstart',function(e){ const t=e.target.closest&&e.target.closest('.gallery'); if(t)_galX=e.changedTouches[0].clientX; },{passive:true});
 document.addEventListener('touchend',function(e){ const g=e.target.closest&&e.target.closest('.gallery'); if(!g)return; const dx=e.changedTouches[0].clientX-_galX; if(Math.abs(dx)>40){ const n=g.querySelector(dx<0?'.gal-nav.next':'.gal-nav.prev'); if(n)galStep(n,dx<0?1:-1); } },{passive:true});
 
+// 카드설교 3열 목록 — 누르면 화면 전체 보기(좌우 넘김·스와이프·키보드)
+function cardGridHTML(imgs){
+  return '<div class="cgrid" data-srcs="'+encodeURIComponent(JSON.stringify(imgs))+'">'
+    +imgs.map((u,k)=>'<button type="button" onclick="cardOpen(this,'+k+')" aria-label="카드 '+(k+1)+' 크게 보기"><img src="'+u+'" alt="카드 '+(k+1)+'" loading="lazy"><span>'+(k+1)+'</span></button>').join('')
+    +'</div><p class="cnote">카드를 누르면 크게 보고 옆으로 넘길 수 있습니다</p>';
+}
+const CV={srcs:[],i:0,el:null};
+function cardViewer(){
+  if(CV.el) return CV.el;
+  const v=document.createElement('div'); v.className='cview'; v.setAttribute('role','dialog'); v.setAttribute('aria-label','카드설교 크게 보기');
+  v.innerHTML='<img alt=""><button class="cv-btn cv-close" aria-label="닫기">\u2715</button><button class="cv-btn cv-prev" aria-label="이전">\u2039</button><button class="cv-btn cv-next" aria-label="다음">\u203a</button><div class="cv-count"></div>';
+  v.querySelector('.cv-close').onclick=cardClose; v.querySelector('.cv-prev').onclick=()=>cardGo(-1); v.querySelector('.cv-next').onclick=()=>cardGo(1);
+  v.addEventListener('click',e=>{ if(e.target===v) cardClose(); });
+  let x0=0; v.addEventListener('touchstart',e=>{x0=e.changedTouches[0].clientX;},{passive:true});
+  v.addEventListener('touchend',e=>{ const dx=e.changedTouches[0].clientX-x0; if(Math.abs(dx)>40) cardGo(dx<0?1:-1); },{passive:true});
+  document.addEventListener('keydown',e=>{ if(!v.classList.contains('open'))return; if(e.key==='Escape')cardClose(); if(e.key==='ArrowRight')cardGo(1); if(e.key==='ArrowLeft')cardGo(-1); });
+  document.body.appendChild(v); CV.el=v; return v;
+}
+function cardShow(){ const v=cardViewer(); v.querySelector('img').src=CV.srcs[CV.i]; v.querySelector('.cv-count').textContent=(CV.i+1)+' / '+CV.srcs.length; }
+function cardOpen(btn,k){ CV.srcs=JSON.parse(decodeURIComponent(btn.closest('.cgrid').dataset.srcs)); CV.i=k; cardShow(); cardViewer().classList.add('open'); document.body.style.overflow='hidden'; }
+function cardGo(d){ CV.i=(CV.i+d+CV.srcs.length)%CV.srcs.length; cardShow(); }
+function cardClose(){ if(CV.el) CV.el.classList.remove('open'); document.body.style.overflow=''; }
+
 // HTML 첨부(가정예배지) 높이를 내용에 맞춰 늘려 프레임/내부 스크롤 제거
 // HTML 첨부(가정예배지) 표시 보정: 하늘색 배경 제거→흰 배경, 카드 전체폭, 높이 자동
 function fitFrame(f){
@@ -290,12 +327,12 @@ function cardHTML(p, i){
 
   let media="";
   if(yi) media+=ytEmbed(yi);                              // 유튜브 바로보기
-  if(imgs.length) media+=galleryHTML(imgs);              // 이미지: 모든 글에서 갤러리(좌우 넘김)
+  if(imgs.length) media+=(p.category==='카드설교' && imgs.length>1) ? cardGridHTML(imgs) : galleryHTML(imgs);   // 카드설교는 3열 목록, 그 외 이미지는 갤러리(좌우 넘김)
   if(newest && others.length){                            // 최신 글: HTML(가정예배지)/PDF 인라인
     const htmlAtt=others.find(u=>/\.html?(\?|$)/i.test(u));
     media+=preview(htmlAtt||others[0]);
   }
-  let bodyExtra= hasText ? '<div class="post-text">'+mdInline(esc(text)).replace(/\n/g,'<br>')+'</div>' : '';
+  let bodyExtra= hasText ? '<div class="post-text'+(p.category==='카드설교'?' small':'')+'">'+mdInline(esc(text)).replace(/\n/g,'<br>')+'</div>' : '';
   // 다운로드 링크는 이미지 외 파일만 (이미지는 갤러리로 보여주므로 새창 안 열림)
   let fileLinks= others.length ? '<div class="post-files">'+others.map((u,k)=>{
       const name=decodeURIComponent(u.split('/').pop().split('?')[0])||('첨부'+(k+1));
