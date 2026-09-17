@@ -134,8 +134,8 @@ img{display:block;max-width:100%;}
         <button class="dbtn">설교 ▾</button>
         <div class="menu">
           <a href="board.html?cat=설교">설교</a>
-          <a href="jubo/cards/">카드설교</a>
-          <a href="jubo/qt.html">QT자료</a>
+          <a href="board.html?cat=카드설교">카드설교</a>
+          <a href="board.html?cat=QT자료">QT자료</a>
         </div>
       </div>
       <a href="board.html?cat=찬양">찬양</a>
@@ -182,7 +182,7 @@ mb.addEventListener('click',(e)=>{ e.stopPropagation(); nl.classList.toggle('ope
 document.addEventListener('click',(e)=>{ if(nl.classList.contains('open') && !nl.contains(e.target) && !mb.contains(e.target)) nl.classList.remove('open'); });
 nl.querySelectorAll('a').forEach((a)=>a.addEventListener('click',()=>nl.classList.remove('open')));
 
-const CATS=["설교","찬양","구역모임","가정예배","주보"];
+const CATS=["설교","카드설교","QT자료","찬양","구역모임","가정예배","주보"];
 const params=new URLSearchParams(location.search);
 let cur=params.get('cat'); if(!CATS.includes(cur)) cur=CATS[0];
 document.getElementById('board-title').textContent=cur;
