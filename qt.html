@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>내 혀의 고삐</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@500;700&display=swap">
+<style>
+  :root {
+    --bg: #f9f7f2; --paper: #ffffff; --ink: #1e2a2b; --muted: #66716f; --line: #e4dfd4; --soft: #f1ede4;
+    --a-adult: #2f6b6f; --a-youth: #4b5ea8; --a-kids: #c9612e;
+    --a-adult-soft: #e6f0f0; --a-youth-soft: #e9ecf8; --a-kids-soft: #fbeae0;
+    --sans: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    --serif: 'Noto Serif KR', 'Apple Myungjo', 'Batang', serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #15191a; --paper: #1d2324; --ink: #ece7dc; --muted: #9aa5a3; --line: #2f3739; --soft: #242c2d;
+      --a-adult: #7fc2c5; --a-youth: #a4b0ee; --a-kids: #f0a074;
+      --a-adult-soft: #1f2f30; --a-youth-soft: #23283b; --a-kids-soft: #362820;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15191a; --paper: #1d2324; --ink: #ece7dc; --muted: #9aa5a3; --line: #2f3739; --soft: #242c2d;
+    --a-adult: #7fc2c5; --a-youth: #a4b0ee; --a-kids: #f0a074;
+    --a-adult-soft: #1f2f30; --a-youth-soft: #23283b; --a-kids-soft: #362820;
+  }
+  html, body { background: var(--bg); color: var(--ink); }
+  body { margin: 0; font-family: var(--sans); font-size: 16px; line-height: 1.75; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 720px; margin: 0 auto; padding-block: 0 64px; padding-inline: 18px; }
+  .top { padding-block: 26px 14px; display: flex; flex-direction: column; gap: 6px; }
+  .top .eyebrow { font-size: 12px; letter-spacing: .12em; color: var(--muted); font-weight: 500; }
+  .top h1 { font-family: var(--serif); font-size: 24px; font-weight: 700; margin: 0; line-height: 1.3; text-wrap: balance; }
+  .top .sermon { font-size: 14px; color: var(--muted); }
+  .top .sermon b { color: var(--ink); font-weight: 500; }
+
+  .sticky { position: sticky; top: env(safe-area-inset-top, 0px); background: var(--bg); z-index: 5; padding-block: 10px 12px; display: flex; flex-direction: column; gap: 10px; border-bottom: 1px solid var(--line); }
+  .seg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border: 1.5px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--paper); }
+  .seg button { appearance: none; border: 0; background: transparent; color: var(--muted); font: inherit; font-size: 15px; font-weight: 500; min-height: 44px; cursor: pointer; }
+  .seg button + button { border-left: 1.5px solid var(--line); }
+  .seg button[aria-selected="true"] { color: #fff; background: var(--accent); }
+  .seg button:focus-visible { outline: 2px solid var(--accent); outline-offset: -3px; }
+  .days { display: flex; gap: 8px; }
+  .days button { appearance: none; flex: 1; border: 1.5px solid var(--line); background: var(--paper); color: var(--muted); border-radius: 10px; min-height: 44px; font: inherit; font-size: 14px; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.2; gap: 2px; padding: 4px 6px; }
+  .days button small { font-size: 11px; opacity: .8; }
+  .days button[aria-selected="true"] { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); font-weight: 700; }
+  .days button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .panel { display: flex; flex-direction: column; gap: 22px; padding-block: 26px 0; }
+  .head { display: flex; flex-direction: column; gap: 8px; }
+  .head .ref { display: inline-flex; align-self: flex-start; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--accent); background: var(--accent-soft); padding: 4px 12px; border-radius: 999px; }
+  .head h2 { font-family: var(--serif); font-size: 28px; line-height: 1.25; margin: 0; font-weight: 700; text-wrap: balance; }
+  .head .lead { font-size: 15px; color: var(--muted); }
+
+  .scripture { background: var(--paper); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; font-family: var(--serif); font-size: 17px; line-height: 1.95; }
+  .scripture p { margin: 0; }
+  .scripture .v { font-family: var(--sans); font-size: 11px; font-weight: 700; color: var(--accent); vertical-align: super; margin-right: 3px; }
+  .scripture .src { display: block; margin-top: 12px; font-family: var(--sans); font-size: 12px; color: var(--muted); text-align: right; }
+  .retell { background: var(--accent-soft); border-radius: 14px; padding: 18px 20px; font-size: 16px; }
+  .retell .lbl { font-size: 12px; font-weight: 700; color: var(--accent); letter-spacing: .08em; display: block; margin-bottom: 6px; }
+  .retell p { margin: 0 0 8px; } .retell p:last-child { margin-bottom: 0; }
+
+  .sec { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 14px; padding-block: 18px; border-top: 1px solid var(--line); }
+  .sec .lbl { font-size: 13px; font-weight: 700; color: var(--accent); letter-spacing: .06em; padding-top: 3px; }
+  .sec .body { display: flex; flex-direction: column; gap: 10px; }
+  .sec p { margin: 0; }
+  .sec .k { font-weight: 700; color: var(--accent); margin-right: 6px; }
+  .qs { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .qs li { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 6px; }
+  .qs li .n { width: 24px; height: 24px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; margin-top: 4px; }
+  .fill { border-bottom: 1.5px dashed var(--line); min-height: 34px; }
+  .apply { background: var(--soft); border-radius: 12px; padding: 14px 16px; }
+  .prayer { font-family: var(--serif); font-size: 16.5px; line-height: 1.9; }
+  .prayer .blank { display: inline-block; min-width: 140px; border-bottom: 1.5px solid var(--line); }
+  .nav { display: flex; justify-content: space-between; gap: 12px; padding-top: 10px; }
+  .nav button { appearance: none; border: 1.5px solid var(--line); background: var(--paper); color: var(--ink); border-radius: 999px; min-height: 44px; padding: 0 18px; font: inherit; font-size: 14px; cursor: pointer; }
+  .nav button:disabled { opacity: .35; cursor: default; }
+  .foot { margin-top: 40px; font-size: 12px; color: var(--muted); text-align: center; line-height: 1.6; }
+  @media (max-width: 480px) {
+    .sec { grid-template-columns: 1fr; gap: 6px; }
+    .head h2 { font-size: 24px; }
+    .scripture { padding: 16px 18px; font-size: 16px; }
+  }
+  @media (prefers-reduced-motion: no-preference) { .panel { animation: in .25s ease; } @keyframes in { from { opacity: .4; transform: translateY(4px); } to { opacity: 1; transform: none; } } }
+</style>
+</head>
+<body>
+
+<div class="wrap" id="app">
+  <header class="top">
+    <div class="eyebrow" id="eyebrow"></div>
+    <h1 id="setTitle"></h1>
+    <div class="sermon" id="sermonLine"></div>
+  </header>
+  <div class="sticky">
+    <div class="seg" role="tablist" aria-label="대상" id="ageTabs"></div>
+    <div class="days" role="tablist" aria-label="날" id="dayTabs"></div>
+  </div>
+  <main class="panel" id="panel"></main>
+  <footer class="foot" id="foot"></footer>
+</div>
+
+<script>
+const DATA = {"set_title": "내 혀의 고삐", "eyebrow": "이번 주 QT · 9월 둘째 주", "sermon": {"title": "온 몸도 굴레 씌우리라", "ref": "야고보서 3:2–8", "date": "2026. 9. 13 (주일)"}, "footer": "성경전서 개역개정판 © 대한성서공회 · 진중교회 QT 자료집", "days": [{"day_label": "월요일", "ref": "잠 15:1-4", "passage": {"ref": "잠 15:1-4", "label": "잠언 15:1–4", "source": "개역개정", "verses": [{"v": 1, "text": "유순한 대답은 분노를 쉬게 하여도 과격한 말은 노를 격동하느니라"}, {"v": 2, "text": "지혜 있는 자의 혀는 지식을 선히 베풀고 미련한 자의 입은 미련한 것을 쏟느니라"}, {"v": 3, "text": "여호와의 눈은 어디서든지 악인과 선인을 감찰하시느니라"}, {"v": 4, "text": "온순한 혀는 곧 생명 나무이지만 패역한 혀는 마음을 상하게 하느니라"}]}, "adult": {"title": "혀는 생명나무가 될 수 있다", "lead": "주일 설교는 혀를 불에 비유했습니다. 잠언은 같은 혀를 생명나무라고 부릅니다. 같은 혀가 두 가지가 됩니다.", "explain": [{"k": "1절", "t": "유순한 대답이 분노를 쉬게 합니다. 잠언은 말의 <b>내용<\/b>보다 <b>온도<\/b>를 먼저 말합니다. 옳은 말도 과격하면 노를 격동합니다. 야고보가 말한 작은 불씨가 여기서 붙습니다."}, {"k": "2절", "t": "지혜 있는 자의 혀는 지식을 '선히 베풉니다'. 아는 것을 자랑하지 않고 나눕니다. 미련한 자의 입은 미련한 것을 '쏟습니다'. 걸러지지 않은 말이 그대로 나옵니다. 설교에서 들은 '고삐 풀린 망아지'가 이 모습입니다."}, {"k": "3절", "t": "말 이야기 한가운데 하나님의 눈이 나옵니다. 우리 말은 사람만 듣지 않습니다. <b>하나님이 듣고 계십니다.<\/b> 이 한 절이 혀의 고삐를 누가 쥐어야 하는지 답합니다."}, {"k": "4절", "t": "온량한 혀는 생명나무입니다. 에덴의 나무가 말 속에 있습니다. 패려한 혀는 마음을 상하게 합니다. 아담이 하와를 '내 뼈 중의 뼈'라 불렀다가 '저 여자 때문'이라 말한 두 장면이 이 한 절에 들어 있습니다."}], "questions": ["지난 한 주, 내 말의 온도는 어땠습니까? 옳은 말을 과격하게 한 순간이 있었습니까?", "3절처럼 '하나님이 듣고 계신다'를 의식하면, 오늘 어떤 말을 하지 않게 됩니까?"], "apply": "오늘 화가 나는 순간 한 번, 대답하기 전에 세 번 숨을 쉽니다. 그 3초 동안 '여호와의 눈이 감찰하신다'(3절)를 떠올립니다. 유순한 대답 한 번을 연습합니다.", "prayer": "우리 말을 다 듣고 계시는 하나님, 제 혀가 불이 아니라 생명나무가 되기를 원합니다. 옳은 말을 과격하게 하던 저를 돌아봅니다. 오늘 화가 나는 순간에 유순한 대답을 하게 하시고, 그 고삐를 주님이 쥐어 주옵소서. 예수님의 이름으로 기도합니다. 아멘."}, "youth": {"title": "같은 말, 다른 온도", "lead": "옳은 말도 세게 하면 싸움이 된다. 잠언은 말의 내용보다 온도를 먼저 본다.", "explain": [{"k": "", "t": "1절을 보세요. 유순한 대답은 분노를 쉬게 하고, 과격한 말은 화를 키웁니다. 내용이 다른 게 아닙니다. <b>온도<\/b>가 다릅니다. 친구가 약속에 늦었을 때 '왜 늦었어?'와 '너 또 늦었냐?'는 같은 뜻이지만 결과가 다릅니다."}, {"k": "", "t": "2절은 두 종류의 입을 말합니다. 지혜로운 사람은 아는 것을 '베풉니다'. 미련한 사람은 생각나는 대로 '쏟습니다'. 단톡방에서 한 번 쏟은 말은 다시 담을 수 없습니다. 주일 설교에서 들은 '고삐 풀린 망아지'가 이 모습입니다."}, {"k": "", "t": "3절이 갑자기 하나님 이야기를 합니다. 말 이야기 한가운데서요. 이유가 있습니다. 내 말을 듣는 사람이 친구만이 아니라는 뜻입니다. <b>하나님이 듣고 계십니다.<\/b> 그래서 4절은 말합니다. 온량한 혀는 생명나무다. 내 말이 누군가를 살릴 수 있습니다."}], "questions": ["이번 주 내가 '쏟은' 말이 있었습니까? 단톡방이든 집이든, 다시 담고 싶은 말은 무엇입니까?", "내 말을 하나님이 듣고 계신다고 생각하면 어떤 말이 줄어들까요?"], "apply": "오늘 단톡방이나 댓글에 무언가 쓰기 전에 3초만 멈춥니다. '이 말이 생명나무인가, 불인가?' 한 번 묻고 보냅니다.", "prayer": "하나님, 제 말을 듣고 계신다는 것을 잊지 않게 해 주세요. 세게 말하는 습관을 고쳐 주세요. 제 말이 누군가에게 생명나무가 되게 해 주세요. 예수님의 이름으로 기도합니다. 아멘."}, "kids": {"title": "말에도 온도가 있어요", "lead": "따뜻한 말은 화를 가라앉히고, 뜨거운 말은 화를 키워요.", "retell": ["잠언은 하나님이 솔로몬 왕에게 주신 지혜의 말이에요. 오늘 말씀은 우리 입에서 나오는 말에 대해 알려 줘요. 부드러운 말로 대답하면 화난 사람도 마음이 풀려요. 하지만 거친 말은 화를 더 크게 만들어요.", "지혜로운 사람은 좋은 말을 나눠 주고, 어리석은 사람은 생각 없이 말을 쏟아 버려요. 그런데 잠언은 중요한 것을 알려 줘요. 하나님이 우리가 하는 말을 다 들으신다는 거예요. 그리고 부드러운 말은 생명나무 같아서 사람을 살리고, 나쁜 말은 마음을 아프게 해요."], "explain": [{"k": "찾아보세요", "t": "1절에서 화를 가라앉히는 말에 ○표 하고, 화를 키우는 말에 △표 해 보세요. 4절에서 부드러운 말을 무엇에 비유했는지 밑줄을 그어 보세요."}, {"k": "생각해 보세요", "t": "물이 뜨거우면 손을 데고, 따뜻하면 기분이 좋아요. 말도 그래요. 같은 말도 따뜻하게 하면 친구 마음이 풀리고, 뜨겁게 하면 친구 마음을 데게 해요. 주일에 목사님이 혀는 작은 불씨 같다고 하셨어요. 작은 불씨가 큰 산을 태워요. 하나님은 내 말이 사람을 살리는 생명나무가 되기를 바라세요."}], "questions": ["부드러운 말은 무엇과 같다고 했나요? (4절)", "이번 주에 내가 한 뜨거운 말이 있었나요? 따뜻하게 바꾸면 어떻게 말할 수 있을까요?"], "apply": "오늘 화가 났을 때 소리치기 전에 마음속으로 '하나, 둘, 셋'을 세고 부드럽게 말해 보세요.", "prayer": "하나님, 제 말을 다 듣고 계시지요. 제 입에서 따뜻한 말이 나오게 해 주세요. 오늘 저는 ___ 에게 따뜻한 말을 하고 싶어요. 예수님 이름으로 기도해요. 아멘."}}, {"day_label": "수요일", "ref": "행 2:1-4", "passage": {"ref": "행 2:1-4", "label": "사도행전 2:1–4", "source": "개역개정", "verses": [{"v": 1, "text": "오순절 날이 이미 이르매 그들이 다같이 한 곳에 모였더니"}, {"v": 2, "text": "홀연히 하늘로부터 급하고 강한 바람 같은 소리가 있어 그들이 앉은 온 집에 가득하며"}, {"v": 3, "text": "마치 불의 혀처럼 갈라지는 것들이 그들에게 보여 각 사람 위에 하나씩 임하여 있더니"}, {"v": 4, "text": "그들이 다 성령의 충만함을 받고 성령이 말하게 하심을 따라 다른 언어들로 말하기를 시작하니라"}]}, "adult": {"title": "혀 위에 내린 불", "lead": "야고보는 혀를 불이라 했습니다. 오순절에는 불이 혀 위에 내렸습니다. 태우는 불이 아니라 말하게 하는 불입니다.", "explain": [{"k": "1–2절", "t": "제자들은 '다같이 한 곳에' 모였습니다. 예수님을 부인한 베드로도 그 자리에 있었습니다. 성령은 말 잘하는 사람을 찾아오지 않았습니다. <b>모여서 기다리는 사람들<\/b>에게 오셨습니다."}, {"k": "3절", "t": "'불의 혀 같이 갈라지는 것'이 각 사람 위에 임했습니다. 야고보서 3장의 혀와 같은 낱말입니다. 사람의 혀는 온 몸을 더럽히는 불이었습니다. 이제 <b>하나님의 불이 그 혀 위에<\/b> 내립니다. 혀를 없애지 않고, 혀를 사로잡으십니다."}, {"k": "4절", "t": "'성령이 말하게 하심을 따라' 말했습니다. 주일 설교의 고삐가 여기 있습니다. 그들이 말했지만, 말하게 하신 분은 성령입니다. 재갈은 그대로인데 <b>고삐를 쥔 손이 바뀌었습니다.<\/b> 그날 베드로의 입에서 나온 것은 저주가 아니라 복음이었습니다(행 2:14 이하)."}], "questions": ["내 혀는 지금 누가 말하게 합니까? 최근 후회한 말 하나를 떠올리면, 그때 고삐는 누구 손에 있었습니까?", "성령은 '모여서 기다리는' 사람들에게 오셨습니다. 내 언어를 바꾸기 위해 나는 무엇을 기다리고 있습니까?"], "apply": "오늘 말하기 전에 짧게 기도하는 습관 하나를 정합니다. 회의 전, 자녀와 대화 전, 전화를 받기 전. '성령님, 말하게 하소서' 한 문장입니다.", "prayer": "불로 임하신 성령님, 제 혀는 오랫동안 제 것이었습니다. 이제 그 위에 주님의 불을 내려 주옵소서. 태우는 불이 아니라 말하게 하시는 불로, 정죄와 불평 대신 복음과 생명을 말하게 하옵소서. 베드로를 바꾸신 그 손에 제 고삐를 맡깁니다. 예수님의 이름으로 기도합니다. 아멘."}, "youth": {"title": "말을 바꾸는 불", "lead": "혀는 불이라고 했다. 그런데 오순절에는 하나님이 혀 위에 불을 내리셨다.", "explain": [{"k": "", "t": "예수님이 하늘로 올라가신 뒤 제자들은 한 곳에 모여 기다렸습니다. 그중에는 베드로도 있었습니다. 며칠 전 '나는 그 사람 모른다'고 세 번이나 말한 사람입니다. 성령은 말 잘하는 사람이 아니라 <b>모여서 기다린 사람들<\/b>에게 오셨습니다."}, {"k": "", "t": "성령은 '불의 혀' 모양으로 오셨습니다. 주일 설교에서 야고보가 혀를 불이라 한 것과 같은 말입니다. 사람의 혀는 상처 주는 불이었습니다. 하나님은 그 혀를 없애지 않으셨습니다. <b>그 혀 위에 하나님의 불을 놓으셨습니다.<\/b>"}, {"k": "", "t": "4절이 핵심입니다. '성령이 말하게 하심을 따라' 말했습니다. 말하는 건 여전히 그들인데, 말하게 하시는 분이 바뀌었습니다. 고삐를 쥔 손이 바뀐 겁니다. 그날 베드로는 예수님을 부인하던 입으로 예수님을 전했습니다."}], "questions": ["베드로처럼 나도 같은 입으로 정반대 말을 한 적이 있습니까? 그때 무엇이 달랐습니까?", "'성령이 말하게 하심을 따라' 말한다는 것을 내 하루에 적용하면 어떤 모습일까요?"], "apply": "오늘 말하기 어려운 상황 하나(사과, 거절, 부탁)를 앞두고 속으로 한 문장 기도합니다. '성령님, 말하게 해 주세요.' 그리고 말합니다.", "prayer": "성령님, 제 혀 위에도 오순절의 불을 내려 주세요. 상처 주는 말 대신 살리는 말을 하고 싶습니다. 제가 말하되, 성령님이 말하게 하시는 하루가 되게 해 주세요. 예수님의 이름으로 기도합니다. 아멘."}, "kids": {"title": "혀 위에 내려온 불", "lead": "하나님이 제자들의 혀 위에 불을 내려 주셨어요. 무서운 불이 아니에요.", "retell": ["예수님이 하늘로 올라가신 뒤, 제자들은 한 방에 모여서 기도하며 기다렸어요. 그중에는 베드로도 있었어요. 베드로는 얼마 전에 무서워서 '나는 예수님을 몰라요' 하고 거짓말을 한 사람이에요.", "그런데 오순절이라는 날, 갑자기 하늘에서 큰 바람 소리가 났어요. 그리고 불꽃 모양이 갈라져서 사람들 머리 위에 하나씩 내려왔어요. 성령님이 오신 거예요! 제자들은 성령님이 말하게 해 주시는 대로 여러 나라 말로 하나님을 자랑했어요. 거짓말하던 베드로의 입에서 예수님 이야기가 나왔어요."], "explain": [{"k": "찾아보세요", "t": "3절에서 성령님이 어떤 모양으로 오셨는지 ○표 하고, 4절에서 제자들이 누가 말하게 해 주셔서 말했는지 밑줄을 그어 보세요."}, {"k": "생각해 보세요", "t": "주일에 목사님이 혀는 불 같다고 하셨어요. 나쁜 말은 불처럼 친구 마음을 태워요. 그런데 하나님은 제자들의 혀 위에 좋은 불을 내려 주셨어요. 나쁜 말이 나오던 입에서 예수님을 자랑하는 말이 나왔어요. 하나님은 내 입도 그렇게 바꿔 주실 수 있어요."}], "questions": ["성령님은 어떤 모양으로 제자들 위에 오셨나요? (3절)", "베드로처럼 내 입에서도 나쁜 말 대신 좋은 말이 나오려면 누가 도와주셔야 할까요?"], "apply": "오늘 아침에 \"성령님, 제 입을 도와주세요\" 하고 짧게 기도하고 하루를 시작해 보세요.", "prayer": "성령님, 제 입도 베드로처럼 바꿔 주세요. 나쁜 말 대신 예수님을 자랑하는 말이 나오게 해 주세요. 오늘 저는 ___ 라는 말을 조심하고 싶어요. 예수님 이름으로 기도해요. 아멘."}}, {"day_label": "금요일", "ref": "엡 4:29-32", "passage": {"ref": "엡 4:29-32", "label": "에베소서 4:29–32", "source": "개역개정", "verses": [{"v": 29, "text": "무릇 더러운 말은 너희 입 밖에도 내지 말고 오직 덕을 세우는 데 소용되는 대로 선한 말을 하여 듣는 자들에게 은혜를 끼치게 하라"}, {"v": 30, "text": "하나님의 성령을 근심하게 하지 말라 그 안에서 너희가 구원의 날까지 인치심을 받았느니라"}, {"v": 31, "text": "너희는 모든 악독과 노함과 분냄과 떠드는 것과 비방하는 것을 모든 악의와 함께 버리고"}, {"v": 32, "text": "서로 친절하게 하며 불쌍히 여기며 서로 용서하기를 하나님이 그리스도 안에서 너희를 용서하심과 같이 하라"}]}, "adult": {"title": "고삐를 맡긴 사람의 말", "lead": "고삐를 주님께 맡기면 말이 어떻게 달라집니까. 바울은 그 말의 기준을 한 줄로 줍니다. 듣는 사람에게 은혜를 끼치는가.", "explain": [{"k": "29절", "t": "더러운 말은 입 밖에도 내지 말라. 기준은 옳고 그름이 아닙니다. <b>'덕을 세우는 데 소용되는가'<\/b>, 곧 듣는 사람을 세우는가입니다. 맞는 말이라도 사람을 무너뜨리면 이 기준에서 떨어집니다. 주일 설교의 '선생의 자리'가 여기서 걸립니다."}, {"k": "30절", "t": "말 이야기 사이에 '성령을 근심하게 하지 말라'가 들어 있습니다. 우연이 아닙니다. 우리 말이 성령을 슬프게 합니다. 오순절에 혀 위에 내리신 그 성령이 우리 안에 계십니다. 거친 말은 <b>고삐를 도로 빼앗는 일<\/b>입니다."}, {"k": "31절", "t": "버려야 할 목록이 다섯 개입니다. 악독, 노함, 분냄, 떠드는 것, 훼방. 모두 입으로 나옵니다. 야고보가 '쉬지 아니하는 악'이라 부른 혀의 열매들입니다."}, {"k": "32절", "t": "대신 붙들 것은 셋입니다. 인자, 불쌍히 여김, 용서. 그리고 기준이 붙습니다. <b>'하나님이 그리스도 안에서 너희를 용서하심과 같이.'<\/b> 내 말이 바뀌는 힘은 내 결심이 아닙니다. 내가 받은 용서입니다. 고삐를 맡긴 사람은 자기가 먼저 용서받은 사람입니다."}], "questions": ["이번 주 내가 한 말 중 '맞는 말이지만 사람을 세우지 못한 말'이 있었습니까?", "31절의 다섯 가지 중 내 입에서 가장 자주 나오는 것은 무엇입니까? 그것을 32절의 무엇으로 바꾸시겠습니까?"], "apply": "이번 주에 내 말로 상처 준 사람 한 명을 떠올립니다. 오늘 안에 짧게라도 사과하거나, 덕을 세우는 말 한 마디를 건넵니다. 32절을 먼저 읽고 합니다.", "prayer": "그리스도 안에서 저를 먼저 용서하신 하나님, 이번 주 제 입에서 나온 악독과 노함과 훼방을 회개합니다. 성령님을 근심하게 한 말들을 용서하옵소서. 이제 제 말이 듣는 사람을 세우고 은혜를 끼치게 하시고, 받은 용서만큼 용서하는 입이 되게 하옵소서. 제 혀의 고삐를 다시 주님 손에 맡깁니다. 예수님의 이름으로 기도합니다. 아멘."}, "youth": {"title": "세우는 말, 무너뜨리는 말", "lead": "고삐를 하나님께 맡기면 말이 어떻게 달라질까. 바울이 기준 한 줄을 준다.", "explain": [{"k": "", "t": "29절의 기준은 '맞는 말인가'가 아닙니다. <b>'듣는 사람을 세우는 말인가'<\/b>입니다. 맞는 말로 친구를 무너뜨릴 수 있습니다. 틀린 걸 지적해도 세우는 방식이 있고 무너뜨리는 방식이 있습니다."}, {"k": "", "t": "30절이 중요합니다. 우리 말이 성령님을 슬프게 합니다. 수요일에 읽은 그 성령님, 혀 위에 불로 오신 분이 내 안에 계십니다. 거친 말을 쏟을 때마다 <b>고삐를 다시 빼앗는 것<\/b>과 같습니다."}, {"k": "", "t": "31절은 버릴 것 다섯 개, 32절은 붙들 것 세 개를 말합니다. 그리고 마지막에 이유가 나옵니다. '하나님이 너희를 용서하신 것처럼.' 내 말이 바뀌는 힘은 결심이 아니라 <b>내가 받은 용서<\/b>입니다. 용서받은 사람만 용서하는 말을 할 수 있습니다."}], "questions": ["이번 주 내가 '맞는 말'로 누군가를 무너뜨린 적이 있습니까?", "31절의 다섯 가지 중 내가 가장 자주 하는 것은 무엇입니까? 32절의 어떤 말로 바꾸고 싶습니까?"], "apply": "이번 주 내 말로 상처받은 사람이 있으면 오늘 문자 한 줄이라도 보냅니다. 사과든, 세우는 말이든. 보내기 전에 32절을 한 번 읽습니다.", "prayer": "하나님, 저를 먼저 용서해 주셔서 감사합니다. 이번 주 제가 쏟은 거친 말을 회개합니다. 성령님을 슬프게 하지 않게 해 주세요. 제 말이 친구를 세우는 말이 되게 해 주세요. 예수님의 이름으로 기도합니다. 아멘."}, "kids": {"title": "친구를 세워 주는 말", "lead": "말에는 두 종류가 있어요. 친구를 세워 주는 말과 넘어뜨리는 말.", "retell": ["바울 아저씨가 에베소 교회에 편지를 썼어요. 나쁜 말은 입 밖에 내지 말고, 듣는 사람에게 도움이 되는 좋은 말을 하라고 했어요. 그리고 우리 마음속에 계신 성령님을 슬프게 하지 말라고 했어요. 나쁜 말을 하면 성령님이 슬퍼하세요.", "바울 아저씨는 버려야 할 것을 알려 줬어요. 미워하는 마음, 화내는 것, 소리치는 것, 남을 나쁘게 말하는 것. 대신 이렇게 하라고 했어요. 친절하게 하고, 불쌍히 여기고, 서로 용서하기. 왜냐하면 하나님이 예수님을 통해 우리를 먼저 용서해 주셨기 때문이에요."], "explain": [{"k": "찾아보세요", "t": "29절에서 하지 말아야 할 말에 △표 하고, 해야 할 말에 ○표 해 보세요. 32절에서 하나님이 우리에게 하신 일에 밑줄을 그어 보세요."}, {"k": "생각해 보세요", "t": "블록으로 탑을 쌓을 때, 한 개씩 올리면 높아지고 툭 치면 무너져요. 말도 그래요. '잘했어', '고마워', '괜찮아'는 친구 마음을 쌓아 주는 말이에요. '바보야', '저리 가'는 툭 쳐서 무너뜨리는 말이에요. 하나님이 나를 먼저 용서해 주셨으니까, 나도 친구를 용서하는 말을 할 수 있어요."}], "questions": ["바울 아저씨는 어떤 말을 하라고 했나요? (29절)", "이번 주에 친구나 가족에게 해 주고 싶은 '세워 주는 말'은 무엇인가요?"], "apply": "오늘 가족 한 사람에게 '세워 주는 말' 한 마디를 해 보세요. \"고마워\", \"잘했어\", \"사랑해\" 중 하나면 돼요.", "prayer": "하나님, 저를 먼저 용서해 주셔서 감사해요. 제 입에서 친구를 세워 주는 말이 나오게 해 주세요. 오늘 저는 ___ 에게 \"___\" 하고 말할 거예요. 예수님 이름으로 기도해요. 아멘."}}]};
+const AGES = [["adult","청장년"],["youth","청소년"],["kids","어린이"]];
+const state = { age: "adult", day: 0 };
+const esc = s => String(s ?? "").replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const rich = s => esc(s).replace(/&lt;b&gt;/g,"<b>").replace(/&lt;\/b&gt;/g,"</b>");
+
+function readHash(){
+  const m = location.hash.match(/^#(adult|youth|kids)-(\d)$/);
+  if (m) { state.age = m[1]; state.day = Math.min(DATA.days.length-1, Math.max(0, +m[2]-1)); return; }
+  try { const s = JSON.parse(localStorage.getItem("qt-set-last")||"null"); if (s && AGES.some(a=>a[0]===s.age)) { state.age = s.age; state.day = Math.min(DATA.days.length-1, s.day|0); } } catch(e){}
+}
+function remember(){ try { localStorage.setItem("qt-set-last", JSON.stringify(state)); } catch(e){} history.replaceState(null,"",`#${state.age}-${state.day+1}`); }
+function setAccent(){
+  const r = document.documentElement.style;
+  r.setProperty("--accent", `var(--a-${state.age})`); r.setProperty("--accent-soft", `var(--a-${state.age}-soft)`);
+}
+function renderTabs(){
+  document.getElementById("ageTabs").innerHTML = AGES.map(([k,l]) => `<button role="tab" id="age-${k}" aria-selected="${state.age===k}" data-age="${k}">${l}</button>`).join("");
+  document.getElementById("dayTabs").innerHTML = DATA.days.map((d,i) => `<button role="tab" id="day-${i}" aria-selected="${state.day===i}" data-day="${i}"><span>${esc(d.day_label)}</span><small>${esc(d.ref)}</small></button>`).join("");
+}
+function section(lbl, inner){ return `<section class="sec"><div class="lbl">${lbl}</div><div class="body">${inner}</div></section>`; }
+function renderPanel(){
+  const d = DATA.days[state.day]; const c = d[state.age];
+  const verses = d.passage.verses.map(v => `<span class="v">${v.v}</span>${esc(v.text)} `).join("");
+  let html = `<div class="head"><span class="ref">${esc(d.passage.label)}</span><h2>${esc(c.title)}</h2>${c.lead ? `<div class="lead">${rich(c.lead)}</div>` : ""}</div>`;
+  html += `<div class="scripture"><p>${verses}</p><span class="src">${esc(d.passage.source)}</span></div>`;
+  if (c.retell && c.retell.length) html += `<div class="retell"><span class="lbl">쉽게 읽기</span>${c.retell.map(p=>`<p>${rich(p)}</p>`).join("")}</div>`;
+  html += section("설명", c.explain.map(p => `<p>${p.k ? `<span class="k">${esc(p.k)}</span>` : ""}${rich(p.t)}</p>`).join(""));
+  html += section("묵상 질문", `<ol class="qs">${c.questions.map((q,i)=>`<li><span class="n">${i+1}</span><div>${rich(q)}<div class="fill"></div></div></li>`).join("")}</ol>`);
+  html += section("적용", `<div class="apply">${rich(c.apply)}</div>`);
+  html += section("기도", `<div class="prayer">${rich(c.prayer).replace(/___+/g,'<span class="blank"></span>')}</div>`);
+  const last = state.day === DATA.days.length-1;
+  html += `<div class="nav"><button id="prev" ${state.day===0?"disabled":""}>← 이전</button><button id="next" ${last?"disabled":""}>다음 →</button></div>`;
+  document.getElementById("panel").innerHTML = html;
+}
+function render(){ setAccent(); renderTabs(); renderPanel(); remember(); document.title = `${DATA.set_title} · ${AGES.find(a=>a[0]===state.age)[1]}`; }
+document.getElementById("eyebrow").textContent = DATA.eyebrow || "";
+document.getElementById("setTitle").textContent = DATA.set_title;
+document.getElementById("sermonLine").innerHTML = DATA.sermon ? `이번 주 설교 <b>${esc(DATA.sermon.title)}</b> · ${esc(DATA.sermon.ref)}${DATA.sermon.date ? ` · ${esc(DATA.sermon.date)}` : ""}` : "";
+document.getElementById("foot").innerHTML = rich(DATA.footer || "");
+document.getElementById("app").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.age) state.age = b.dataset.age;
+  else if (b.dataset.day) state.day = +b.dataset.day;
+  else if (b.id === "prev") state.day--; else if (b.id === "next") state.day++; else return;
+  render(); if (b.dataset.day !== undefined || b.id === "prev" || b.id === "next") document.getElementById("panel").scrollIntoView({block:"start", behavior:"smooth"});
+});
+window.addEventListener("hashchange", () => { readHash(); render(); });
+readHash(); render();
+</script>
+
+</body>
+</html>
