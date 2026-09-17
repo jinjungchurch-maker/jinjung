@@ -270,6 +270,8 @@ function cardClose(){ if(CV.el) CV.el.classList.remove('open'); document.body.st
 function fitFrame(f){
   try{
     var d=f.contentDocument||f.contentWindow.document;
+    // 게시판은 흰 바탕 디자인 → 펼친 페이지(QT자료 등)가 기기의 어두운 모드를 따르지 않게 밝은 모드로 고정
+    d.documentElement.setAttribute('data-theme','light'); d.documentElement.style.colorScheme='light';
     if(!d.getElementById('board-fit')){
       var st=d.createElement('style'); st.id='board-fit';
       st.textContent=
