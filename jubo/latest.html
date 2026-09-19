@@ -16,7 +16,7 @@
   .wrap{max-width:680px;margin:0 auto;padding-block:0 72px;padding-inline:18px}
   .cover{padding-block:26px 18px;display:flex;flex-direction:column;gap:10px}
   .cover .row{display:flex;justify-content:space-between;align-items:center;gap:12px}
-  .cover img.logo{height:46px;width:auto;max-width:62%} .cover .logos{display:inline-flex;max-width:62%} .cover .logos img.logo{max-width:100%} .cover img.logo-dark{display:none} @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .cover img.logo-light{display:none} :root:not([data-theme="light"]) .cover img.logo-dark{display:inline-block}} :root[data-theme="dark"] .cover img.logo-light{display:none} :root[data-theme="dark"] .cover img.logo-dark{display:inline-block} .cover .no{font-size:12px;color:var(--muted);text-align:right;line-height:1.4}
+  .cover img.logo{height:46px;width:auto;max-width:62%} .cover .logolink{display:inline-flex;max-width:62%} .cover .logos{display:inline-flex;max-width:62%} .cover .logos img.logo{max-width:100%} .cover img.logo-dark{display:none} @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .cover img.logo-light{display:none} :root:not([data-theme="light"]) .cover img.logo-dark{display:inline-block}} :root[data-theme="dark"] .cover img.logo-light{display:none} :root[data-theme="dark"] .cover img.logo-dark{display:inline-block} .cover .no{font-size:12px;color:var(--muted);text-align:right;line-height:1.4}
   .cover h1{font-family:var(--serif);font-size:1.5em;margin:0;line-height:1.3} .cover .date{color:var(--muted);font-size:.9em}
   .motto{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px 16px;font-size:.95em;text-align:center}
   .motto b{font-family:var(--serif);font-size:1.05em}
@@ -145,7 +145,7 @@ function render(){
   const d = DATA; const s = d.sermon; const sec = [];
   // 표지
   let cover = `<header class="cover">
-    <div class="row">${d.logo ? `${d.logo_dark ? `<span class="logos"><img class="logo logo-light" src="${d.logo}" alt="${esc(d.church)}"><img class="logo logo-dark" src="${d.logo_dark}" alt="${esc(d.church)}"></span>` : `<img class="logo" src="${d.logo}" alt="${esc(d.church)}">`}` : `<b>${esc(d.church)}</b>`}<div class="no">${esc(d.issue||"")}<br>${d.founded ? "교회설립 "+esc(d.founded) : ""}</div></div>
+    <div class="row">${d.logo ? `${(l => d.web ? `<a class="logolink" href="${esc(d.web)}" aria-label="${esc(d.church)} 홈페이지">${l}</a>` : l)(`${d.logo_dark ? `<span class="logos"><img class="logo logo-light" src="${d.logo}" alt="${esc(d.church)}"><img class="logo logo-dark" src="${d.logo_dark}" alt="${esc(d.church)}"></span>` : `<img class="logo" src="${d.logo}" alt="${esc(d.church)}">`}`)}` : `<b>${esc(d.church)}</b>`}<div class="no">${esc(d.issue||"")}<br>${d.founded ? "교회설립 "+esc(d.founded) : ""}</div></div>
         ${d.motto ? `<div class="motto"><b>${esc(d.motto.text)}</b><small>${esc(d.motto.ref||"")}</small></div>` : ""}
     <div class="tools"><button class="tbtn" id="big" aria-pressed="false">글자 크게</button></div>
   </header>`;
